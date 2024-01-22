@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MatchManager.Data\MatchManager.Data.csproj" />
+    <ProjectReference Include="..\MatchManager.Infrastructure\MatchManager.Infrastructure.csproj" />
     <ProjectReference Include="..\MatchManager.ViewModel\MatchManager.DTO.csproj" />
   </ItemGroup>
 

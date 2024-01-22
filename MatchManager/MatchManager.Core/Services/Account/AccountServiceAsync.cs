@@ -1,18 +1,21 @@
 ﻿using MatchManager.Core.Services.Account.Interface;
 using MatchManager.DTO.Account;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MatchManager.Infrastructure.Repositories.Account.Interface;
 
 namespace MatchManager.Core.Services.Account
 {
     public class AccountServiceAsync : IAccountServiceAsync
     {
+        private readonly IAccountRepositoryAsync _accountRepository;
+
+        public AccountServiceAsync(IAccountRepositoryAsync accountRepository)
+        {
+            _accountRepository = accountRepository;
+        }
+
         public bool IsUserPresent(string username)
         {
-            throw new NotImplementedException();
+            return _accountRepository.IsUserPresent(username);
         }
 
         public Task<UserDTO> Login(LoginDTO request)

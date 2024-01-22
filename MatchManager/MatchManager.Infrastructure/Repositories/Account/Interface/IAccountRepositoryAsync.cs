@@ -1,9 +1,9 @@
-﻿using MatchManager.Core.Enums;
-using MatchManager.Domain.Entities.Account;
+﻿using MatchManager.Domain.Entities.Account;
+using MatchManager.Domain.Enums;
 
 namespace MatchManager.Infrastructure.Repositories.Account.Interface
 {
-    public interface IUserRepositoryAsync
+    public interface IAccountRepositoryAsync
     {
         bool IsUserPresent(string email);
         void SaveUser(AppUserMaster user);

@@ -1,5 +1,7 @@
 ﻿using MatchManager.Core.Services.Account;
 using MatchManager.Core.Services.Account.Interface;
+using MatchManager.Infrastructure.Repositories.Account;
+using MatchManager.Infrastructure.Repositories.Account.Interface;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -17,7 +19,7 @@ namespace MatchManager.Core.Extensions
             services.AddTransient<IAccountServiceAsync, AccountServiceAsync>();
 
             //Repository
-            //services.AddTransient<IUserRepositoryAsync, UserRepositoryAsync>();
+            services.AddTransient<IAccountRepositoryAsync, AccountRepositoryAsync>();
             return services;
         }
     }
