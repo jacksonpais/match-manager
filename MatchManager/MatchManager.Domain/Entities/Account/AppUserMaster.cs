@@ -1,6 +1,8 @@
-﻿namespace MatchManager.Domain.Entities.Account
+﻿using MatchManager.Domain.Common;
+
+namespace MatchManager.Domain.Entities.Account
 {
-    public class AppUserMaster
+    public class AppUserMaster : UserBaseEntity
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
