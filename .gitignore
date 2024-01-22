@@ -1,0 +1,21 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/MatchManager/.vs
+/MatchManager/MatchManager.API/bin/Debug/net7.0
+/MatchManager/MatchManager.API/logs
+/MatchManager/MatchManager.API/obj
+/MatchManager/MatchManager.API/Properties
+*.user
+/MatchManager/MatchManager.API/appsettings.Development.json
+/MatchManager/MatchManager.API/appsettings.json
+/MatchManager/MatchManager.Core/bin/Debug/net7.0
+/MatchManager/MatchManager.Core/obj
+/MatchManager/MatchManager.Data/bin/Debug/net7.0
+/MatchManager/MatchManager.Data/obj
+/MatchManager/MatchManager.Domain/bin/Debug/net7.0
+/MatchManager/MatchManager.Domain/obj
+/MatchManager/MatchManager.Infrastructure/obj
+/MatchManager/MatchManager.ViewModel/obj
+/MatchManager/MatchManager.ViewModel/bin/Debug/net7.0
