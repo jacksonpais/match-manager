@@ -4,6 +4,7 @@ using MatchManager.Domain.Entities.Account;
 using MatchManager.DTO.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Win32;
 using System.Net;
 
 namespace MatchManager.API.Controllers
@@ -25,7 +26,7 @@ namespace MatchManager.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<ActionResult<Response>> Register([FromBody] RegisterDTO registerDto)
+        public async Task<ActionResult<Response>> Register([FromBody] RegisterRequestDTO registerDto)
         {
             bool userExists = _userService.IsUserPresent(registerDto.Email);
             if (userExists)
@@ -33,6 +34,14 @@ namespace MatchManager.API.Controllers
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.IsSuccess = false;
                 _response.ErrorMessages.Add("Username already exists");
+                return BadRequest(_response);
+            }
+            if (!string.Equals(registerDto.Password, registerDto.ConfirmPassword,
+                StringComparison.Ordinal))
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("Confirm password does not match");
                 return BadRequest(_response);
             }
 

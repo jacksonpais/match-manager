@@ -1,4 +1,5 @@
-﻿using MatchManager.DTO.Account;
+﻿using MatchManager.Core.Wrappers;
+using MatchManager.DTO.Account;
 
 namespace MatchManager.Core.Services.Account.Interface
 {
@@ -6,8 +7,8 @@ namespace MatchManager.Core.Services.Account.Interface
     {
         bool IsUserPresent(string username);
 
-        Task<UserDTO> Register(RegisterDTO request);
+        Task<CoreResult> Register(RegisterRequestDTO request);
 
-        Task<UserDTO> Login(LoginDTO request);
+        Task<CoreResult> Login(LoginRequestDTO request);
     }
 }

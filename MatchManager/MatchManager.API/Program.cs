@@ -1,4 +1,5 @@
 using MatchManager.Core.Extensions;
+using MatchManager.Core.Mappings;
 using MatchManager.Data.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -19,7 +20,7 @@ builder.Services.AddDbContext<DataContext>(option =>
 
 builder.Services.AddCore();
 
-//builder.Services.AddAutoMapper(typeof(MappingConfig));
+builder.Services.AddAutoMapper(typeof(MappingConfig));
 
 builder.Services.AddControllers(option =>
 {

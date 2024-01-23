@@ -22,3 +22,5 @@
 /MatchManager/MatchManager.Infrastructure/bin/Debug/net7.0
 /MatchManager/MatchManager.Data/Migrations
 /MatchManager/MatchManager.Data/appsettings.json
+/MatchManager/MatchManager.Common/bin/Debug/net7.0
+/MatchManager/MatchManager.Common/obj

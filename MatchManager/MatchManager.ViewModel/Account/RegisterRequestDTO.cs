@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MatchManager.DTO.Account
 {
-    public class RegisterDTO
+    public class RegisterRequestDTO
     {
         [Required(ErrorMessage = "Enter your first name")]
         [MinLength(2, ErrorMessage = "First name must be atleast of two characters")]

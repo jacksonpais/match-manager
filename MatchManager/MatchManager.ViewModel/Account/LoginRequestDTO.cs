@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MatchManager.DTO.Account
 {
-    public class LoginDTO
+    public class LoginRequestDTO
     {
         [Required(ErrorMessage = "Enter your email")]
         [EmailAddress(ErrorMessage = "Enter a valid e-mail address")]

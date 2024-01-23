@@ -5,16 +5,15 @@ namespace MatchManager.Infrastructure.Repositories.Account.Interface
 {
     public interface IAccountRepositoryAsync
     {
+        LoginUser LoginUser(long userid);
+        long GetUserId(string email);
         bool IsUserPresent(string email);
-        void SaveUser(AppUserMaster user);
+        Task<User> SaveUser(AppUserMaster user);
         AppUserMaster GetUser(long userid);
-        AppUserMaster GetUser(string username);
-        bool IsUserActivated(long userid);
-        string GetUserSaltbyUserid(long userid);
-
-        UserActivation GetActivation(AppUserMaster user, ActivationType activationType);
-        void SaveActivation(UserActivation activation);
-
         void SaveUserToken(UserToken userTokens);
+        UserActivation GetActivation(LoginUser user, ActivationType activationType);
+        void SaveActivation(UserActivation activation);
+        bool CheckIfEmailActivated(long userid);
+        string GetUserSaltbyUserid(LoginUser user);
     }
 }
