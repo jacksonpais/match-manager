@@ -11,6 +11,8 @@ namespace MatchManager.Data.Context
         }
 
         public DbSet<AppUserMaster> AppUserMaster { get; set; }
+        public DbSet<UserActivation> UserActivation { get; set; }
+        public DbSet<UserToken> UserToken { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

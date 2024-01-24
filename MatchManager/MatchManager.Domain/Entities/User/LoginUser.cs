@@ -1,10 +1,11 @@
-﻿using System;
+﻿using MatchManager.Domain.Entities.Account;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MatchManager.Domain.Entities.Account
+namespace MatchManager.Domain.Entities.User
 {
     public class LoginUser
     {
@@ -15,6 +16,7 @@ namespace MatchManager.Domain.Entities.Account
         public string Email { get; set; }
         public string MobileNo { get; set; }
         public string BirthDate { get; set; }
+        public string PasswordHash { get; set; }
         public int GenderId { get; set; }
         public string Description { get; set; }
         public bool IsFirstTimeLoggedInUser { get; set; }

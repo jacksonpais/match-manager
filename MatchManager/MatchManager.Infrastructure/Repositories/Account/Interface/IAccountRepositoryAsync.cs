@@ -1,4 +1,5 @@
 ﻿using MatchManager.Domain.Entities.Account;
+using MatchManager.Domain.Entities.User;
 using MatchManager.Domain.Enums;
 
 namespace MatchManager.Infrastructure.Repositories.Account.Interface

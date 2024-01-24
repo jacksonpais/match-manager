@@ -1,5 +1,6 @@
 ﻿using MatchManager.Data.Context;
 using MatchManager.Domain.Entities.Account;
+using MatchManager.Domain.Entities.User;
 using MatchManager.Domain.Enums;
 using MatchManager.Infrastructure.Repositories.Account.Interface;
 using Microsoft.Data.SqlClient;
@@ -59,7 +60,35 @@ namespace MatchManager.Infrastructure.Repositories.Account
 
         public LoginUser LoginUser(long userid)
         {
-            throw new NotImplementedException();
+            var appUser = _db.AppUserMaster.FirstOrDefault(user => user.UserId == userid);
+            LoginUser loginUser = new LoginUser()
+            {
+                UserId = appUser.UserId,
+                FirstName = appUser.FirstName,
+                LastName = appUser.LastName,
+                Email = appUser.Email,
+                PasswordHash = appUser.PasswordHash,
+                IsFirstTimeLoggedInUser = appUser.IsFirstTimeLoggedInUser
+            };
+            var appToken = _db.UserToken.FirstOrDefault(token => token.UserId == userid);
+            //loginUser.UserToken = new UserToken()
+            //{
+            //    TokenId = appUser.,
+            //    HashId = Convert.ToInt32(row["hashid"]),
+            //    TokenDate = Convert.ToString(row["tokendate"]),
+            //    PasswordSalt = Convert.ToString(row["passwordsalt"])
+            //};
+            var appActivation = _db.UserActivation.FirstOrDefault(activation => activation.UserId == userid);
+            //user.Activation.Add(new UserActivation
+            //{
+            //    UserId = Convert.ToInt64(row["userid"]),
+            //    ActivationId = Convert.ToInt64(row["activationid"]),
+            //    ActivationDate = Convert.ToString(row["activedate"]),
+            //    ActivationToken = Convert.ToString(row["token"]),
+            //    IsActive = Convert.ToBoolean(row["active"]),
+            //    TokenType = Convert.ToString(row["tokentype"]),
+            //});
+            return loginUser;
         }
 
         public void SaveActivation(UserActivation activation)
