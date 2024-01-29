@@ -17,6 +17,10 @@ namespace MatchManager.Data.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<AppUserMaster>()
+        .HasOne(e => e.UserToken)
+        .WithOne(ed => ed.UserMaster)
+        .HasForeignKey<UserToken>(ed => ed.UserId);
         }
     }
 }

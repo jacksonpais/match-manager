@@ -8,6 +8,6 @@ namespace MatchManager.Domain.Common
 {
     public abstract class UserBaseEntity : AuditableBaseEntity
     {
-        public int UserId { get; set; }
+        public long UserId { get; set; }
     }
 }

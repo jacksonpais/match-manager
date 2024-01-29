@@ -42,7 +42,7 @@ namespace MatchManager.Infrastructure.Repositories.Account
             var user = _db.AppUserMaster.FirstOrDefault(user => user.Email.ToLower() == email.ToLower());
             if (user != null)
             {
-                userid = user.Id;
+                userid = user.UserId;
             }
             return userid;
         }
