@@ -41,6 +41,12 @@ namespace MatchManager.Core.Services.Account
 
             AppUserMaster userMappedobject = _mapper.Map<AppUserMaster>(registerDTO);
             userMappedobject.PasswordHash = saltedpassword;
+            userMappedobject.CreatedDate = DateTime.Now;
+            userMappedobject.UpdatedDate = DateTime.Now;
+            userMappedobject.MobileNo = "";
+            userMappedobject.UserName = registerDTO.Email;
+            userMappedobject.Initial = registerDTO.FirstName.Substring(0, 1) + registerDTO.LastName.Substring(0, 1);
+
             await _accountRepository.SaveUser(userMappedobject);
             long userid = _accountRepository.GetUserId(userMappedobject.Email);
 
