@@ -26,6 +26,9 @@ namespace MatchManager.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Response>> Register([FromBody] RegisterRequestDTO registerDto)
         {
             bool userExists = _userService.IsUserPresent(registerDto.Email);
@@ -46,12 +49,12 @@ namespace MatchManager.API.Controllers
             }
 
             var user = await _userService.Register(registerDto);
-            if (user == null)
+            if (user.IsSuccess == false)
             {
-                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.IsSuccess = false;
-                _response.ErrorMessages.Add("Error while registering");
-                return BadRequest(_response);
+                _response.ErrorMessages.Concat(user.ErrorMessages);
+                return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
             _response.StatusCode = HttpStatusCode.OK;
             _response.IsSuccess = true;

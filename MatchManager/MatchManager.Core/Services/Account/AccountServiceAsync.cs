@@ -36,59 +36,102 @@ namespace MatchManager.Core.Services.Account
 
         public async Task<CoreResult> Register(RegisterRequestDTO registerDTO)
         {
-            var salt = GenerateRandomNumbers.GenerateRandomDigitCode(20);
-            var saltedpassword = HashHelper.CreateHashSHA512(registerDTO.Password, salt);
-
-            AppUserMaster userMappedobject = _mapper.Map<AppUserMaster>(registerDTO);
-            userMappedobject.PasswordHash = saltedpassword;
-            userMappedobject.CreatedDate = DateTime.Now;
-            userMappedobject.UpdatedDate = DateTime.Now;
-            userMappedobject.MobileNo = "";
-            userMappedobject.UserName = registerDTO.Email;
-            userMappedobject.Initial = registerDTO.FirstName.Substring(0, 1) + registerDTO.LastName.Substring(0, 1);
-
-            await _accountRepository.SaveUser(userMappedobject);
-            long userid = _accountRepository.GetUserId(userMappedobject.Email);
-
-            if (userid != 0)
+            try
             {
-                var user = _accountRepository.LoginUser(userid);
+                var salt = GenerateRandomNumbers.GenerateRandomDigitCode(20);
+                var saltedpassword = HashHelper.CreateHashSHA512(registerDTO.Password, salt);
 
-                UserToken userTokens = new UserToken()
+                AppUserMaster appUser = _mapper.Map<AppUserMaster>(registerDTO);
+                appUser.PasswordHash = saltedpassword;
+                appUser.CreatedDate = DateTime.Now;
+                appUser.UpdatedDate = DateTime.Now;
+                appUser.MobileNo = "";
+                appUser.UserName = registerDTO.Email;
+                appUser.Initial = registerDTO.FirstName.Substring(0, 1) + registerDTO.LastName.Substring(0, 1);
+
+                _accountRepository.SaveUser(appUser);
+                await _accountRepository.SaveChangesToDBAsync();
+                appUser.UserId = _accountRepository.GetUserId(registerDTO.Email);
+
+                if (appUser.UserId != 0)
                 {
-                    UserId = userid,
-                    HashId = 0,
-                    PasswordSalt = salt,
-                    TokenId = user.UserToken.TokenId
-                };
+                    UserToken userToken = new UserToken()
+                    {
+                        UserId = appUser.UserId,
+                        CreatedDate = DateTime.Now,
+                        UpdatedDate = DateTime.Now,
+                        HashId = 0,
+                        PasswordSalt = salt
+                    };
 
-                var token = HashHelper.CreateHashSHA256((GenerateRandomNumbers.GenerateRandomDigitCode(6)));
-                _accountRepository.SaveUserToken(userTokens);
-                UserActivation userActivation = _accountRepository.GetActivation(user, ActivationType.email);
-                userActivation.ActivationToken = token;
-                _accountRepository.SaveActivation(userActivation);
-                //var body = _emailSender.CreateRegistrationVerificationEmail(user, Properties.Resource.DomainUrl + Properties.Resource.RegistrationVerificationUrl, Properties.Resource.MainEmail);
-                //MessageTemplate messageTemplate = new MessageTemplate()
-                //{
-                //    ToAddress = user.Email,
-                //    Subject = "Welcome to MeetApp",
-                //    Body = body,
-                //    EmailProperties = new EmailProperties()
-                //    {
-                //        Email = Convert.ToString(Properties.Resource.Email).Trim(),
-                //        Password = Convert.ToString(Properties.Resource.Password).Trim(),
-                //        Host = Convert.ToString(Properties.Resource.MailHost).Trim(),
-                //        Port = Convert.ToInt32(Properties.Resource.MailPort),
-                //        DisplayName = Convert.ToString(Properties.Resource.AppName).Trim()
-                //    }
-                //};
+                    var emailToken = HashHelper.CreateHashSHA256((GenerateRandomNumbers.GenerateRandomDigitCode(6)));
+                    List<UserActivation> activations = new List<UserActivation>()
+                    {
+                        new UserActivation()
+                        {
+                            ActivationDate = DateTime.Now.ToString(),
+                            CreatedDate = DateTime.Now,
+                            UpdatedDate = DateTime.Now,
+                            IsActive = false,
+                            UserId = appUser.UserId,
+                            TokenType = ActivationType.email.ToString(),
+                            ActivationToken = emailToken
+                        },
+                        new UserActivation()
+                        {
+                            ActivationDate = DateTime.Now.ToString(),
+                            CreatedDate = DateTime.Now,
+                            UpdatedDate = DateTime.Now,
+                            IsActive = false,
+                            UserId = appUser.UserId,
+                            TokenType = ActivationType.password.ToString(),
+                            ActivationToken = ""
+                        },
+                        new UserActivation()
+                        {
+                            ActivationDate = DateTime.Now.ToString(),
+                            CreatedDate = DateTime.Now,
+                            UpdatedDate = DateTime.Now,
+                            IsActive = false,
+                            UserId = appUser.UserId,
+                            TokenType = ActivationType.mobile.ToString(),
+                            ActivationToken = ""
+                        }
 
-                //_emailSender.SendMailusingSmtp(messageTemplate);
+                    };
 
-                _result.IsSuccess = true;
-                _result.Result = "Almost done! Your account has been created, but in order to proceed, please check your email and click the link inside to confirm your account.";
+                    _accountRepository.SaveUserToken(userToken);
+                    _accountRepository.SaveUserActivation(activations);
+                    await _accountRepository.SaveChangesToDBAsync();
+
+                    //var body = _emailSender.CreateRegistrationVerificationEmail(user, Properties.Resource.DomainUrl + Properties.Resource.RegistrationVerificationUrl, Properties.Resource.MainEmail);
+                    //MessageTemplate messageTemplate = new MessageTemplate()
+                    //{
+                    //    ToAddress = user.Email,
+                    //    Subject = "Welcome to MeetApp",
+                    //    Body = body,
+                    //    EmailProperties = new EmailProperties()
+                    //    {
+                    //        Email = Convert.ToString(Properties.Resource.Email).Trim(),
+                    //        Password = Convert.ToString(Properties.Resource.Password).Trim(),
+                    //        Host = Convert.ToString(Properties.Resource.MailHost).Trim(),
+                    //        Port = Convert.ToInt32(Properties.Resource.MailPort),
+                    //        DisplayName = Convert.ToString(Properties.Resource.AppName).Trim()
+                    //    }
+                    //};
+
+                    //_emailSender.SendMailusingSmtp(messageTemplate);
+
+                    _result.IsSuccess = true;
+                    _result.Result = "Almost done! Your account has been created, but in order to proceed, please check your email and click the link inside to confirm your account.";
+                }
+                else
+                {
+                    _result.IsSuccess = false;
+                    _result.ErrorMessages.Add("Error While Registrating User");
+                }
             }
-            else
+            catch (Exception ex)
             {
                 _result.IsSuccess = false;
                 _result.ErrorMessages.Add("Error While Registrating User");

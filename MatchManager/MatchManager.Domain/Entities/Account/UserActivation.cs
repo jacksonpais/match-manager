@@ -19,6 +19,6 @@ namespace MatchManager.Domain.Entities.Account
         public string ActivationToken { get; set; }
         public string TokenType { get; set; }
 
-        public AppUserMaster AppUserMaster { get; set; }    
+        public AppUserMaster UserMaster { get; set; }    
     }
 }

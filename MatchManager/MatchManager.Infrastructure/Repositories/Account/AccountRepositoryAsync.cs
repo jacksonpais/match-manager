@@ -1,9 +1,9 @@
-﻿using MatchManager.Data.Context;
+﻿using AutoMapper;
+using MatchManager.Data.Context;
 using MatchManager.Domain.Entities.Account;
 using MatchManager.Domain.Entities.User;
 using MatchManager.Domain.Enums;
 using MatchManager.Infrastructure.Repositories.Account.Interface;
-using Microsoft.Data.SqlClient;
 using System.Data;
 
 namespace MatchManager.Infrastructure.Repositories.Account
@@ -11,35 +11,37 @@ namespace MatchManager.Infrastructure.Repositories.Account
     public class AccountRepositoryAsync : IAccountRepositoryAsync
     {
         private readonly DataContext _db;
-        public AccountRepositoryAsync(DataContext db)
+        private readonly IMapper _mapper;
+        public AccountRepositoryAsync(DataContext db, IMapper mapper)
         {
             _db = db;
-        }
-
-        public bool CheckIfEmailActivated(long userid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public UserActivation GetActivation(LoginUser user, ActivationType activationType)
-        {
-            throw new NotImplementedException();
+            _mapper = mapper;
         }
 
         public AppUserMaster GetUser(long userid)
         {
-            throw new NotImplementedException();
+            return _db.AppUserMaster.FirstOrDefault(user => user.UserId == userid);
         }
 
-        public string GetUserSaltbyUserid(LoginUser user)
+        public AppUserMaster GetUser(string username)
         {
-            throw new NotImplementedException();
+            return _db.AppUserMaster.FirstOrDefault(user => user.Email.ToLower() == username.ToLower());
         }
 
-        public long GetUserId(string email)
+        public UserActivation GetUserActivation(long userid, ActivationType activationType)
+        {
+            return _db.UserActivation.FirstOrDefault(activation => activation.UserId == userid && activationType == activationType);
+        }
+
+        public List<UserActivation> GetUserActivations(long userid)
+        {
+            return _db.UserActivation.Where(activation => activation.UserId == userid).ToList();
+        }
+
+        public long GetUserId(string username)
         {
             long userid = 0;
-            var user = _db.AppUserMaster.FirstOrDefault(user => user.Email.ToLower() == email.ToLower());
+            var user = GetUser(username);
             if (user != null)
             {
                 userid = user.UserId;
@@ -47,10 +49,20 @@ namespace MatchManager.Infrastructure.Repositories.Account
             return userid;
         }
 
-        public bool IsUserPresent(string email)
+        public string GetUserSaltbyUserid(long userid)
+        {
+            return LoginUser(userid).UserToken.PasswordSalt;
+        }
+
+        public UserToken GetUserToken(long userid)
+        {
+            return LoginUser(userid).UserToken;
+        }
+
+        public bool IsUserPresent(string username)
         {
             bool rtn = false;
-            var userid = GetUserId(email);
+            var userid = GetUserId(username);
             if (userid != 0)
             {
                 rtn = true;
@@ -60,59 +72,42 @@ namespace MatchManager.Infrastructure.Repositories.Account
 
         public LoginUser LoginUser(long userid)
         {
-            var appUser = _db.AppUserMaster.FirstOrDefault(user => user.UserId == userid);
-            LoginUser loginUser = new LoginUser()
+            if (userid != 0)
             {
-                UserId = appUser.UserId,
-                FirstName = appUser.FirstName,
-                LastName = appUser.LastName,
-                Email = appUser.Email,
-                PasswordHash = appUser.PasswordHash,
-                IsFirstTimeLoggedInUser = appUser.IsFirstTimeLoggedInUser
-            };
-            var appToken = _db.UserToken.FirstOrDefault(token => token.UserId == userid);
-            //loginUser.UserToken = new UserToken()
-            //{
-            //    TokenId = appUser.,
-            //    HashId = Convert.ToInt32(row["hashid"]),
-            //    TokenDate = Convert.ToString(row["tokendate"]),
-            //    PasswordSalt = Convert.ToString(row["passwordsalt"])
-            //};
-            var appActivation = _db.UserActivation.FirstOrDefault(activation => activation.UserId == userid);
-            //user.Activation.Add(new UserActivation
-            //{
-            //    UserId = Convert.ToInt64(row["userid"]),
-            //    ActivationId = Convert.ToInt64(row["activationid"]),
-            //    ActivationDate = Convert.ToString(row["activedate"]),
-            //    ActivationToken = Convert.ToString(row["token"]),
-            //    IsActive = Convert.ToBoolean(row["active"]),
-            //    TokenType = Convert.ToString(row["tokentype"]),
-            //});
-            return loginUser;
+                AppUserMaster user = GetUser(userid);
+                UserToken userToken = GetUserToken(userid);
+                List<UserActivation> userActivations = GetUserActivations(userid);
+                user.UserActivation = userActivations;
+                user.UserToken = userToken;
+                return _mapper.Map<LoginUser>(user);
+            }
+            else
+            {
+                return null;
+            }
         }
 
-        public void SaveActivation(UserActivation activation)
+        public async Task SaveChangesToDBAsync()
         {
-            throw new NotImplementedException();
+            await _db.SaveChangesAsync();
+        }
+
+        public void SaveUser(AppUserMaster user)
+        {
+            _db.AppUserMaster.Add(user);
+        }
+
+        public void SaveUserActivation(List<UserActivation> activations)
+        {
+            for (int i = 0; i < activations.Count; i++)
+            {
+                _db.UserActivation.Add(activations[i]);
+            }
         }
 
         public void SaveUserToken(UserToken userTokens)
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task<User> SaveUser(AppUserMaster appUser)
-        {
-            User user = new User()
-            {
-                UserName = appUser.Email,
-                FirstName = appUser.FirstName,
-                LastName = appUser.LastName,
-            };
-
-            _db.AppUserMaster.Add(appUser);
-            await _db.SaveChangesAsync();
-            return user;
+            _db.UserToken.Add(userTokens);
         }
     }
 }

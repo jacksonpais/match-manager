@@ -1,4 +1,5 @@
-﻿using MatchManager.Domain.Entities.Account;
+﻿using MatchManager.Data.Context;
+using MatchManager.Domain.Entities.Account;
 using MatchManager.Domain.Entities.User;
 using MatchManager.Domain.Enums;
 
@@ -6,15 +7,21 @@ namespace MatchManager.Infrastructure.Repositories.Account.Interface
 {
     public interface IAccountRepositoryAsync
     {
-        LoginUser LoginUser(long userid);
-        long GetUserId(string email);
-        bool IsUserPresent(string email);
-        Task<User> SaveUser(AppUserMaster user);
-        AppUserMaster GetUser(long userid);
+        Task SaveChangesToDBAsync();
+        void SaveUser(AppUserMaster user);
         void SaveUserToken(UserToken userTokens);
-        UserActivation GetActivation(LoginUser user, ActivationType activationType);
-        void SaveActivation(UserActivation activation);
-        bool CheckIfEmailActivated(long userid);
-        string GetUserSaltbyUserid(LoginUser user);
+        void SaveUserActivation(List<UserActivation> activation);
+
+        long GetUserId(string username);
+        AppUserMaster GetUser(long userid);
+        AppUserMaster GetUser(string username);
+        UserActivation GetUserActivation(long userid, ActivationType activationType);
+        List<UserActivation> GetUserActivations(long userid);
+        UserToken GetUserToken(long userid);
+
+        LoginUser LoginUser(long userid);      
+        bool IsUserPresent(string username);   
+        
+        string GetUserSaltbyUserid(long userid);
     }
 }

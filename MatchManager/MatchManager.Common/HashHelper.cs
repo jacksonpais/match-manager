@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace MatchManager.Common
 {
@@ -19,10 +15,10 @@ namespace MatchManager.Common
         public static string CreateHashSHA512(string hashpassword, string salt)
         {
             string saltAndPwd = String.Concat(hashpassword, salt);
-            var bytes = System.Text.Encoding.UTF8.GetBytes(saltAndPwd);
-            var hash = System.Security.Cryptography.SHA512.Create();
+            var bytes = Encoding.UTF8.GetBytes(saltAndPwd);
+            var hash = SHA512.Create();
             var hashedInputBytes = hash.ComputeHash(bytes);
-            var hashedInputStringBuilder = new System.Text.StringBuilder(128);
+            var hashedInputStringBuilder = new StringBuilder(128);
             foreach (var b in hashedInputBytes)
             {
                 hashedInputStringBuilder.Append(b.ToString("X2"));
