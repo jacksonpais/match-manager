@@ -10,18 +10,35 @@ namespace MatchManager.Domain.Entities.Account
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long UserId { get; set; }
 
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string UserName { get; set; }
-        public string Initial { get; set; }
-        public string Email { get; set; }
-        public string MobileNo { get; set; }
-        public string? BirthDate { get; set; }
-        public int GenderId { get; set; }
+        [MaxLength(100)]
+        public required string FirstName { get; set; }
+
+        [MaxLength(100)]
+        public required string LastName { get; set; }
+
+        [MaxLength(100)]
+        public required string UserName { get; set; }
+
+        [MaxLength(2)]
+        [NotMapped]
+        public required string Initial { get; set; }
+
+        [MaxLength(100)]
+        public required string Email { get; set; }
+
+        [MaxLength(100)]
+        public required string MobileNo { get; set; }
+
+        public DateTime BirthDate { get; set; }
+        public required int GenderId { get; set; }
         public string? Description { get; set; }
-        public string PasswordHash { get; set; }
-        public bool IsFirstTimeLoggedInUser { get; set; }
-        public UserToken UserToken { get; set; }
-        public ICollection<UserActivation> UserActivation { get; set; }
+        public required string PasswordHash { get; set; }
+        public required bool IsFirstTimeLoggedInUser { get; set; }
+
+        [ForeignKey("UserId")]
+        public required UserToken UserToken { get; set; }
+
+        [ForeignKey("UserId")]
+        public required List<UserActivation> UserActivation { get; set; }
     }
 }

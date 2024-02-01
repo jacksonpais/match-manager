@@ -17,10 +17,18 @@ namespace MatchManager.Data.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<AppUserMaster>()
-        .HasOne(e => e.UserToken)
-        .WithOne(ed => ed.UserMaster)
-        .HasForeignKey<UserToken>(ed => ed.UserId);
+
+            modelBuilder.Entity<AppUserMaster>().Property(p => p.CreatedDate).ValueGeneratedOnAdd();
+            modelBuilder.Entity<AppUserMaster>().Property(p => p.UpdatedDate).ValueGeneratedOnAddOrUpdate();
+
+            modelBuilder.Entity<UserToken>().Property(p => p.CreatedDate).ValueGeneratedOnAdd();
+            modelBuilder.Entity<UserToken>().Property(p => p.UpdatedDate).ValueGeneratedOnAddOrUpdate();
+
+            modelBuilder.Entity<UserActivation>().Property(p => p.CreatedDate).ValueGeneratedOnAdd();
+            modelBuilder.Entity<UserActivation>().Property(p => p.UpdatedDate).ValueGeneratedOnAddOrUpdate();
+
+            modelBuilder.Entity<AppUserMaster>().HasOne(e => e.UserToken).WithOne(ed => ed.UserMaster).HasForeignKey<UserToken>(ed => ed.UserId);
+            modelBuilder.Entity<AppUserMaster>().HasMany(e => e.UserActivation).WithOne(ed => ed.UserMaster).HasForeignKey(ed => ed.UserId);
         }
     }
 }

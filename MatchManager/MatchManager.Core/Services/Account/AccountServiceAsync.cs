@@ -58,10 +58,8 @@ namespace MatchManager.Core.Services.Account
                     UserToken userToken = new UserToken()
                     {
                         UserId = appUser.UserId,
-                        CreatedDate = DateTime.Now,
-                        UpdatedDate = DateTime.Now,
                         HashId = 0,
-                        PasswordSalt = salt
+                        PasswordSalt = salt,
                     };
 
                     var emailToken = HashHelper.CreateHashSHA256((GenerateRandomNumbers.GenerateRandomDigitCode(6)));
@@ -69,9 +67,7 @@ namespace MatchManager.Core.Services.Account
                     {
                         new UserActivation()
                         {
-                            ActivationDate = DateTime.Now.ToString(),
-                            CreatedDate = DateTime.Now,
-                            UpdatedDate = DateTime.Now,
+                            ActivationDate = DateTime.Now,
                             IsActive = false,
                             UserId = appUser.UserId,
                             TokenType = ActivationType.email.ToString(),
@@ -79,9 +75,7 @@ namespace MatchManager.Core.Services.Account
                         },
                         new UserActivation()
                         {
-                            ActivationDate = DateTime.Now.ToString(),
-                            CreatedDate = DateTime.Now,
-                            UpdatedDate = DateTime.Now,
+                            ActivationDate = DateTime.Now,
                             IsActive = false,
                             UserId = appUser.UserId,
                             TokenType = ActivationType.password.ToString(),
@@ -89,9 +83,7 @@ namespace MatchManager.Core.Services.Account
                         },
                         new UserActivation()
                         {
-                            ActivationDate = DateTime.Now.ToString(),
-                            CreatedDate = DateTime.Now,
-                            UpdatedDate = DateTime.Now,
+                            ActivationDate = DateTime.Now,
                             IsActive = false,
                             UserId = appUser.UserId,
                             TokenType = ActivationType.mobile.ToString(),

@@ -9,16 +9,17 @@ using System.Threading.Tasks;
 
 namespace MatchManager.Domain.Entities.Account
 {
+    [ComplexType]
     public class UserActivation : UserBaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long ActivationId { get; set; }
-        public bool IsActive { get; set; }
-        public string ActivationDate { get; set; }
-        public string ActivationToken { get; set; }
-        public string TokenType { get; set; }
+        public required bool IsActive { get; set; }
+        public required DateTime ActivationDate { get; set; }
+        public required string ActivationToken { get; set; }
+        public required string TokenType { get; set; }
 
-        public AppUserMaster UserMaster { get; set; }    
+        public AppUserMaster? UserMaster { get; set; }    
     }
 }
