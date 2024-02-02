@@ -48,16 +48,17 @@ namespace MatchManager.API.Controllers
                 return BadRequest(_response);
             }
 
-            var user = await _userService.Register(registerDto);
-            if (user.IsSuccess == false)
+            var registerResponse = await _userService.Register(registerDto);
+            if (registerResponse.IsSuccess == false)
             {
                 _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.IsSuccess = false;
-                _response.ErrorMessages.Concat(user.ErrorMessages);
+                _response.ErrorMessages = Enumerable.Concat(_response.ErrorMessages, registerResponse.ErrorMessages).ToList();
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
             _response.StatusCode = HttpStatusCode.OK;
             _response.IsSuccess = true;
+            _response.Result = registerResponse.Result;
             return Ok(_response);
         }
     }

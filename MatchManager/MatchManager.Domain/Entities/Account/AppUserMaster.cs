@@ -1,10 +1,11 @@
 ﻿using MatchManager.Domain.Common;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using MatchManager.Domain.Common.Interface;
 
 namespace MatchManager.Domain.Entities.Account
 {
-    public class AppUserMaster : AuditableBaseEntity
+    public class AppUserMaster : IAuditableBaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -40,5 +41,7 @@ namespace MatchManager.Domain.Entities.Account
 
         [ForeignKey("UserId")]
         public required List<UserActivation> UserActivation { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime UpdatedDate { get; set; }
     }
 }

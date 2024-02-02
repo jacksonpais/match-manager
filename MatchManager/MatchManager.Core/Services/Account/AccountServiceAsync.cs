@@ -43,8 +43,6 @@ namespace MatchManager.Core.Services.Account
 
                 AppUserMaster appUser = _mapper.Map<AppUserMaster>(registerDTO);
                 appUser.PasswordHash = saltedpassword;
-                appUser.CreatedDate = DateTime.Now;
-                appUser.UpdatedDate = DateTime.Now;
                 appUser.MobileNo = "";
                 appUser.UserName = registerDTO.Email;
                 appUser.Initial = registerDTO.FirstName.Substring(0, 1) + registerDTO.LastName.Substring(0, 1);

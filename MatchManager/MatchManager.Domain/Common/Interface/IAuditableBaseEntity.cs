@@ -1,6 +1,6 @@
-﻿namespace MatchManager.Domain.Common
+﻿namespace MatchManager.Domain.Common.Interface
 {
-    public abstract class AuditableBaseEntity
+    public interface IAuditableBaseEntity
     {
         public DateTime CreatedDate { get; set; }
 
