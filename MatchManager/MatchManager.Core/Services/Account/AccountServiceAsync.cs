@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using MatchManager.Common;
 using MatchManager.Core.Services.Account.Interface;
+using MatchManager.Core.Services.Token.Interface;
 using MatchManager.Core.Wrappers;
 using MatchManager.Core.Wrappers.Interface;
 using MatchManager.Domain.Entities.Account;
+using MatchManager.Domain.Entities.User;
 using MatchManager.Domain.Enums;
 using MatchManager.DTO.Account;
 using MatchManager.Infrastructure.Repositories.Account.Interface;
@@ -16,11 +19,13 @@ namespace MatchManager.Core.Services.Account
         private readonly IAccountRepositoryAsync _accountRepository;
         protected CoreResult _result;
         private readonly IMapper _mapper;
+        private readonly ITokenService _tokenService;
 
-        public AccountServiceAsync(IAccountRepositoryAsync accountRepository, IMapper mapper)
+        public AccountServiceAsync(IAccountRepositoryAsync accountRepository, IMapper mapper, ITokenService tokenService)
         {
             _accountRepository = accountRepository;
             _mapper = mapper;
+            _tokenService = tokenService;
             _result = new CoreResult();
         }
 
@@ -29,9 +34,51 @@ namespace MatchManager.Core.Services.Account
             return _accountRepository.IsUserPresent(username);
         }
 
-        public Task<CoreResult> Login(LoginRequestDTO request)
+        public async Task<CoreResult> Login(LoginRequestDTO request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                AppUserMaster user = _accountRepository.GetUser(request.Email);
+                if (user.UserId == 0)
+                {
+                    _result.IsSuccess = false;
+                    _result.ErrorMessages.Add("Entered email is invalid");
+                }
+                else
+                {
+                    var usersalt = _accountRepository.GetUserSaltbyUserid(user.UserId);
+                    if (usersalt == null)
+                    {
+                        _result.IsSuccess = false;
+                        _result.ErrorMessages.Add("Entered Email or Password is Invalid");
+                    }
+                    UserActivation userActivation = _accountRepository.GetUserActivation(user.UserId, ActivationType.email);
+                    if (userActivation.IsActive == false)
+                    {
+                        _result.IsSuccess = false;
+                        _result.ErrorMessages.Add("Your Account is In-Active. Contact Administrator");
+                    }
+
+                    var generatedhash = HashHelper.CreateHashSHA512(request.Password, usersalt);
+
+                    if (string.Equals(user.PasswordHash, generatedhash, StringComparison.Ordinal))
+                    {
+                        LoginUser loginUser = await _accountRepository.LoginUser(user.UserId);
+                        CreateUserObject(loginUser);
+                    }
+                    else
+                    {
+                        _result.IsSuccess = false;
+                        _result.ErrorMessages.Add("Entered Email or Password is Invalid");
+                    }
+                }
+                return _result;
+            }
+            catch (Exception ex)
+            {
+                _result.IsSuccess = false;
+                _result.ErrorMessages.Add("Error While Registrating User");
+            }
         }
 
         public async Task<CoreResult> Register(RegisterRequestDTO registerDTO)
@@ -127,6 +174,17 @@ namespace MatchManager.Core.Services.Account
                 _result.ErrorMessages.Add("Error While Registrating User");
             }
             return _result;
+        }
+
+        private UserDTO CreateUserObject(LoginUser loginUser)
+        {
+            return new UserDTO
+            {
+                FirstName = loginUser.FirstName,
+                LastName = loginUser.LastName,
+                UserName = loginUser.UserName,
+                Token = _tokenService.CreateToken(loginUser),
+            };
         }
     }
 }

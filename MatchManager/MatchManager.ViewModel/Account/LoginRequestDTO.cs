@@ -6,11 +6,12 @@ namespace MatchManager.DTO.Account
     {
         [Required(ErrorMessage = "Enter your email")]
         [EmailAddress(ErrorMessage = "Enter a valid e-mail address")]
-        public string? Email { get; set; }
+        [MaxLength(100, ErrorMessage = "Email can only be maximum of 100 characters")]
+        public required string Email { get; set; }
 
         [Required(ErrorMessage = "Password Required")]
-        [MinLength(7, ErrorMessage = "Minimum Password must be 8 in characters")]
-        [RegularExpression("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{4,8}$", ErrorMessage = "Your password must be at least 7 characters long and contain at least 1 letter and 1 number")]
-        public string? Password { get; set; }
+        [MinLength(8, ErrorMessage = "Minimum Password must be 8 in characters")]
+        [RegularExpression("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{4,8}$", ErrorMessage = "Your password must be at least 8 characters long and contain at least 1 letter and 1 number")]
+        public required string Password { get; set; }
     }
 }
