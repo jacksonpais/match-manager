@@ -1,27 +1,16 @@
 ﻿using AutoMapper;
-using Azure.Core;
 using MatchManager.Common;
 using MatchManager.Core.Services.Account.Interface;
 using MatchManager.Core.Services.Token.Interface;
 using MatchManager.Core.Wrappers;
-using MatchManager.Core.Wrappers.Interface;
 using MatchManager.Domain.Entities.Account;
 using MatchManager.Domain.Entities.User;
 using MatchManager.Domain.Enums;
 using MatchManager.DTO.Account;
 using MatchManager.Infrastructure.Repositories.Account.Interface;
 using MatchManager.Services.Secure;
-using MatchManager.Services.SecurityService;
 using MatchManager.Services.SecurityService.Interface;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Win32;
-using System;
-using System.Net.Http;
-using System.Security.Cryptography;
-using System.Web;
 
 namespace MatchManager.Core.Services.Account
 {

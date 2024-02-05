@@ -1,10 +1,4 @@
-﻿using MatchManager.Domain.Entities.Account;
-using MatchManager.Domain.Entities.User;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MatchManager.Domain.Entities.User;
 
 namespace MatchManager.Core.Services.Token.Interface
 {

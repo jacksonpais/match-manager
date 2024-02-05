@@ -1,11 +1,5 @@
 ﻿using MatchManager.Services.SecurityService.Interface;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MatchManager.Services.SecurityService
 {

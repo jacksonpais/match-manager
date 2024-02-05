@@ -1,5 +1,4 @@
-﻿using MatchManager.Domain.Common;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using MatchManager.Domain.Common.Interface;
 

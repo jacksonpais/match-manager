@@ -1,13 +1,9 @@
 ﻿using MatchManager.Core;
 using MatchManager.Core.Services.Account.Interface;
-using MatchManager.Domain.Entities.Account;
-using MatchManager.Domain.Enums;
 using MatchManager.DTO.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Win32;
 using System.Net;
 
 namespace MatchManager.API.Controllers
