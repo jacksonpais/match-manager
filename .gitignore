@@ -24,3 +24,10 @@
 /MatchManager/MatchManager.Data/appsettings.json
 /MatchManager/MatchManager.Common/bin/Debug/net7.0
 /MatchManager/MatchManager.Common/obj
+/MatchManager/MatchManager.Core/appsettings.json
+/MatchManager/MatchManager.Services/bin/Debug/net7.0
+/MatchManager/MatchManager.Services/obj
+/MatchManager/MatchManager.Web/obj
+/MatchManager/MatchManager.Web/Properties
+/MatchManager/MatchManager.Web/appsettings.Development.json
+/MatchManager/MatchManager.Web/appsettings.json

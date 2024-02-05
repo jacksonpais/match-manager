@@ -10,7 +10,18 @@ using MatchManager.Domain.Entities.User;
 using MatchManager.Domain.Enums;
 using MatchManager.DTO.Account;
 using MatchManager.Infrastructure.Repositories.Account.Interface;
+using MatchManager.Services.Secure;
+using MatchManager.Services.SecurityService;
+using MatchManager.Services.SecurityService.Interface;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Win32;
+using System;
+using System.Net.Http;
+using System.Security.Cryptography;
+using System.Web;
 
 namespace MatchManager.Core.Services.Account
 {
@@ -20,25 +31,29 @@ namespace MatchManager.Core.Services.Account
         protected CoreResult _result;
         private readonly IMapper _mapper;
         private readonly ITokenService _tokenService;
+        private readonly ISecureService _secureService;
+        private readonly IDataProtectionProvider _iDataProtectionProvider;
 
-        public AccountServiceAsync(IAccountRepositoryAsync accountRepository, IMapper mapper, ITokenService tokenService)
+        public AccountServiceAsync(IAccountRepositoryAsync accountRepository, IMapper mapper, ITokenService tokenService, ISecureService secureService, IDataProtectionProvider iDataProtectionProvider)
         {
             _accountRepository = accountRepository;
             _mapper = mapper;
             _tokenService = tokenService;
+            _secureService = secureService;
+            _iDataProtectionProvider = iDataProtectionProvider;
             _result = new CoreResult();
         }
 
-        public bool IsUserPresent(string username)
+        public async Task<bool> IsUserPresent(string username)
         {
-            return _accountRepository.IsUserPresent(username);
+            return await _accountRepository.IsUserPresent(username);
         }
 
         public async Task<CoreResult> Login(LoginRequestDTO request)
         {
             try
             {
-                AppUserMaster user = _accountRepository.GetUser(request.Email);
+                AppUserMaster user = await _accountRepository.GetUser(request.Email);
                 if (user.UserId == 0)
                 {
                     _result.IsSuccess = false;
@@ -46,30 +61,33 @@ namespace MatchManager.Core.Services.Account
                 }
                 else
                 {
-                    var usersalt = _accountRepository.GetUserSaltbyUserid(user.UserId);
+                    var usersalt = await _accountRepository.GetUserSaltbyUserid(user.UserId);
                     if (usersalt == null)
                     {
                         _result.IsSuccess = false;
                         _result.ErrorMessages.Add("Entered Email or Password is Invalid");
                     }
-                    UserActivation userActivation = _accountRepository.GetUserActivation(user.UserId, ActivationType.email);
+                    UserActivation userActivation = await _accountRepository.GetUserActivation(user.UserId, ActivationType.email);
                     if (userActivation.IsActive == false)
                     {
                         _result.IsSuccess = false;
                         _result.ErrorMessages.Add("Your Account is In-Active. Contact Administrator");
                     }
-
-                    var generatedhash = HashHelper.CreateHashSHA512(request.Password, usersalt);
-
-                    if (string.Equals(user.PasswordHash, generatedhash, StringComparison.Ordinal))
-                    {
-                        LoginUser loginUser = await _accountRepository.LoginUser(user.UserId);
-                        CreateUserObject(loginUser);
-                    }
                     else
                     {
-                        _result.IsSuccess = false;
-                        _result.ErrorMessages.Add("Entered Email or Password is Invalid");
+                        var generatedhash = HashHelper.CreateHashSHA512(request.Password, usersalt);
+
+                        if (string.Equals(user.PasswordHash, generatedhash, StringComparison.Ordinal))
+                        {
+                            LoginUser loginUser = await _accountRepository.LoginUser(user.UserId);
+                            _result.Result = CreateUserObject(loginUser);
+                            _result.IsSuccess = true;
+                        }
+                        else
+                        {
+                            _result.IsSuccess = false;
+                            _result.ErrorMessages.Add("Entered Email or Password is Invalid");
+                        }
                     }
                 }
                 return _result;
@@ -79,6 +97,7 @@ namespace MatchManager.Core.Services.Account
                 _result.IsSuccess = false;
                 _result.ErrorMessages.Add("Error While Registrating User");
             }
+            return _result;
         }
 
         public async Task<CoreResult> Register(RegisterRequestDTO registerDTO)
@@ -96,7 +115,7 @@ namespace MatchManager.Core.Services.Account
 
                 _accountRepository.SaveUser(appUser);
                 await _accountRepository.SaveChangesToDBAsync();
-                appUser.UserId = _accountRepository.GetUserId(registerDTO.Email);
+                appUser.UserId = await _accountRepository.GetUserId(registerDTO.Email);
 
                 if (appUser.UserId != 0)
                 {
@@ -185,6 +204,58 @@ namespace MatchManager.Core.Services.Account
                 UserName = loginUser.UserName,
                 Token = _tokenService.CreateToken(loginUser),
             };
+        }
+
+        public async Task<CoreResult> VerifyAccount(VerifyAccountDTO request)
+        {
+            try
+            {
+                var arrayValue = SecurityHelper.SplitToken(request.Key);
+                if (arrayValue != null)
+                {
+                    var userId = Convert.ToInt64(arrayValue[1]);
+                    UserActivation userActivation = await _accountRepository.GetUserActivation(userId, ActivationType.email);
+                    if (userActivation != null)
+                    {
+                        var result = SecurityHelper.IsTokenValid(arrayValue, request.HashToken, userActivation.ActivationToken);
+
+                        if (result == 1)
+                        {
+                            _result.IsSuccess = false;
+                            _result.ErrorMessages.Add("Token is invalid");
+                        }
+
+                        if (result == 2)
+                        {
+                            _result.IsSuccess = false;
+                            _result.ErrorMessages.Add("Verification link has expired");
+                        }
+
+                        if (result == 0)
+                        {
+                            userActivation.IsActive = true;
+                            _accountRepository.SaveUserActivation(userActivation);
+                            await _accountRepository.SaveChangesToDBAsync();
+                            userActivation = await _accountRepository.GetUserActivation(userId, ActivationType.email);
+                            if (userActivation.IsActive)
+                            {
+                                _result.IsSuccess = true;
+                            }
+                            else
+                            {
+                                _result.IsSuccess = false;
+                                _result.ErrorMessages.Add("Your Account is In-Active. Contact Administrator");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                _result.IsSuccess = false;
+                _result.ErrorMessages.Add("Sorry Verification Failed Please request a new Verification link!");
+            }
+            return _result;
         }
     }
 }

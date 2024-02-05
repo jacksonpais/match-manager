@@ -11,17 +11,18 @@ namespace MatchManager.Infrastructure.Repositories.Account.Interface
         void SaveUser(AppUserMaster user);
         void SaveUserToken(UserToken userTokens);
         void SaveUserActivation(List<UserActivation> activation);
+        void SaveUserActivation(UserActivation activation);
 
-        long GetUserId(string username);
-        AppUserMaster GetUser(long userid);
-        AppUserMaster GetUser(string username);
-        UserActivation GetUserActivation(long userid, ActivationType activationType);
-        List<UserActivation> GetUserActivations(long userid);
-        UserToken GetUserToken(long userid);
+        Task<long> GetUserId(string username);
+        Task<AppUserMaster> GetUser(long userid);
+        Task<AppUserMaster> GetUser(string username);
+        Task<UserActivation> GetUserActivation(long userid, ActivationType activationType);
+        Task<List<UserActivation>> GetUserActivations(long userid);
+        Task<UserToken> GetUserToken(long userid);
 
-        LoginUser LoginUser(long userid);      
-        bool IsUserPresent(string username);   
+        Task<LoginUser> LoginUser(long userid);      
+        Task<bool> IsUserPresent(string username);   
         
-        string GetUserSaltbyUserid(long userid);
+        Task<string> GetUserSaltbyUserid(long userid);
     }
 }

@@ -4,6 +4,7 @@ using MatchManager.Domain.Entities.Account;
 using MatchManager.Domain.Entities.User;
 using MatchManager.Domain.Enums;
 using MatchManager.Infrastructure.Repositories.Account.Interface;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace MatchManager.Infrastructure.Repositories.Account
@@ -18,30 +19,30 @@ namespace MatchManager.Infrastructure.Repositories.Account
             _mapper = mapper;
         }
 
-        public AppUserMaster GetUser(long userid)
+        public async Task<AppUserMaster> GetUser(long userid)
         {
-            return _db.AppUserMaster.FirstOrDefault(user => user.UserId == userid);
+            return await _db.AppUserMaster.FirstOrDefaultAsync(user => user.UserId == userid);
         }
 
-        public AppUserMaster GetUser(string username)
+        public async Task<AppUserMaster> GetUser(string username)
         {
-            return _db.AppUserMaster.FirstOrDefault(user => user.Email.ToLower() == username.ToLower());
+            return await _db.AppUserMaster.FirstOrDefaultAsync(user => user.Email.ToLower() == username.ToLower());
         }
 
-        public UserActivation GetUserActivation(long userid, ActivationType activationType)
+        public async Task<UserActivation> GetUserActivation(long userid, ActivationType activationType)
         {
-            return _db.UserActivation.FirstOrDefault(activation => activation.UserId == userid && activationType == activationType);
+            return await _db.UserActivation.FirstOrDefaultAsync(activation => activation.UserId == userid && activationType == activationType);
         }
 
-        public List<UserActivation> GetUserActivations(long userid)
+        public async Task<List<UserActivation>> GetUserActivations(long userid)
         {
-            return _db.UserActivation.Where(activation => activation.UserId == userid).ToList();
+            return await _db.UserActivation.Where(activation => activation.UserId == userid).ToListAsync();
         }
 
-        public long GetUserId(string username)
+        public async Task<long> GetUserId(string username)
         {
             long userid = 0;
-            var user = GetUser(username);
+            var user = await GetUser(username);
             if (user != null)
             {
                 userid = user.UserId;
@@ -49,20 +50,22 @@ namespace MatchManager.Infrastructure.Repositories.Account
             return userid;
         }
 
-        public string GetUserSaltbyUserid(long userid)
+        public async Task<string> GetUserSaltbyUserid(long userid)
         {
-            return LoginUser(userid).UserToken.PasswordSalt;
+            UserToken userToken = await GetUserToken(userid);
+            return userToken.PasswordSalt;
         }
 
-        public UserToken GetUserToken(long userid)
+        public async Task<UserToken> GetUserToken(long userid)
         {
-            return LoginUser(userid).UserToken;
+            var userToken = await _db.UserToken.FirstOrDefaultAsync(user => user.UserId == userid);
+            return userToken;
         }
 
-        public bool IsUserPresent(string username)
+        public async Task<bool> IsUserPresent(string username)
         {
             bool rtn = false;
-            var userid = GetUserId(username);
+            var userid = await GetUserId(username);
             if (userid != 0)
             {
                 rtn = true;
@@ -70,15 +73,15 @@ namespace MatchManager.Infrastructure.Repositories.Account
             return rtn;
         }
 
-        public LoginUser LoginUser(long userid)
+        public async Task<LoginUser> LoginUser(long userid)
         {
             if (userid != 0)
             {
-                AppUserMaster user = GetUser(userid);
-                UserToken userToken = GetUserToken(userid);
-                List<UserActivation> userActivations = GetUserActivations(userid);
-                user.UserActivation = userActivations;
-                user.UserToken = userToken;
+                AppUserMaster user = await GetUser(userid);
+                //UserToken userToken = await GetUserToken(userid);
+                //List<UserActivation> userActivations = await GetUserActivations(userid);
+                //user.UserActivation = userActivations;
+                //user.UserToken = userToken;
                 return _mapper.Map<LoginUser>(user);
             }
             else
@@ -103,6 +106,11 @@ namespace MatchManager.Infrastructure.Repositories.Account
             {
                 _db.UserActivation.Add(activations[i]);
             }
+        }
+
+        public void SaveUserActivation(UserActivation activation)
+        {
+            _db.UserActivation.Update(activation);
         }
 
         public void SaveUserToken(UserToken userTokens)

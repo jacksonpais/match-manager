@@ -1,7 +1,11 @@
 ﻿using MatchManager.Core.Services.Account;
 using MatchManager.Core.Services.Account.Interface;
+using MatchManager.Core.Services.Token;
+using MatchManager.Core.Services.Token.Interface;
 using MatchManager.Infrastructure.Repositories.Account;
 using MatchManager.Infrastructure.Repositories.Account.Interface;
+using MatchManager.Services.SecurityService;
+using MatchManager.Services.SecurityService.Interface;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -17,6 +21,9 @@ namespace MatchManager.Core.Extensions
         {
             //Service
             services.AddTransient<IAccountServiceAsync, AccountServiceAsync>();
+            services.AddTransient<ITokenService, TokenService>();
+            services.AddTransient<ISecureService, SecureService>();
+            services.AddDataProtection();
 
             //Repository
             services.AddTransient<IAccountRepositoryAsync, AccountRepositoryAsync>();

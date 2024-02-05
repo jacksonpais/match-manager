@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MatchManager.Domain.Entities.Account;
+using MatchManager.Domain.Entities.User;
 using MatchManager.DTO.Account;
 
 namespace MatchManager.Core.Mappings
@@ -9,7 +10,7 @@ namespace MatchManager.Core.Mappings
         public MappingConfig()
         {
             CreateMap<RegisterRequestDTO, AppUserMaster>().ReverseMap();
-            CreateMap<UserDTO, AppUserMaster>().ReverseMap();
+            CreateMap<LoginUser, AppUserMaster>().ReverseMap();
         }
     }
 }

@@ -1,9 +1,12 @@
 ﻿using MatchManager.Core;
 using MatchManager.Core.Services.Account.Interface;
 using MatchManager.Domain.Entities.Account;
+using MatchManager.Domain.Enums;
 using MatchManager.DTO.Account;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Win32;
 using System.Net;
 
@@ -15,12 +18,14 @@ namespace MatchManager.API.Controllers
     {
         private readonly IAccountServiceAsync _userService;
         private readonly ILogger<AccountController> _logger;
+        public IDataProtectionProvider _iDataProtectionProvider;
         protected Response _response;
 
-        public AccountController(IAccountServiceAsync userService, ILogger<AccountController> logger)
+        public AccountController(IAccountServiceAsync userService, ILogger<AccountController> logger, IDataProtectionProvider iDataProtectionProvider)
         {
             _logger = logger;
             _userService = userService;
+            _iDataProtectionProvider = iDataProtectionProvider;
             _response = new Response();
         }
 
@@ -31,7 +36,7 @@ namespace MatchManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Response>> Register([FromBody] RegisterRequestDTO registerDto)
         {
-            bool userExists = _userService.IsUserPresent(registerDto.Email);
+            bool userExists = await _userService.IsUserPresent(registerDto.Email);
             if (userExists)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
@@ -69,7 +74,7 @@ namespace MatchManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Response>> Login([FromBody] LoginRequestDTO loginDto)
         {
-            bool userExists = _userService.IsUserPresent(loginDto.Email);
+            bool userExists = await _userService.IsUserPresent(loginDto.Email);
             if (!userExists)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
@@ -89,6 +94,41 @@ namespace MatchManager.API.Controllers
             _response.IsSuccess = true;
             _response.Result = loginResponse.Result;
             return Ok(_response);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("verify")]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Response>> VerifyAccount(string key, string hashtoken)
+        {
+            if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(hashtoken))
+            {
+                var loginResponse = await _userService.VerifyAccount(new VerifyAccountDTO()
+                {
+                    Key = key,
+                    HashToken = hashtoken
+                });
+                if (loginResponse.IsSuccess == false)
+                {
+                    _response.StatusCode = HttpStatusCode.InternalServerError;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages = Enumerable.Concat(_response.ErrorMessages, loginResponse.ErrorMessages).ToList();
+                    return StatusCode(StatusCodes.Status500InternalServerError, _response);
+                }
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = true;
+                _response.Result = null; //loginResponse.Result;
+                return Ok(_response);
+            }
+            else
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("Key or token is Invalid");
+                return BadRequest(_response);
+            }
         }
     }
 }
