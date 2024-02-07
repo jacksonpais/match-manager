@@ -31,3 +31,6 @@
 /MatchManager/MatchManager.Web/Properties
 /MatchManager/MatchManager.Web/appsettings.Development.json
 /MatchManager/MatchManager.Web/appsettings.json
+/MatchManager/MatchManager.Web/bin/Debug/net7.0
+/MatchManager/MatchManager.Web/node_modules
+/MatchManager/MatchManager.Web/package-lock.json
