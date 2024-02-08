@@ -71,7 +71,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(option =>
     {
         option.DocumentTitle = "Match Manager API - DEV";
-        option.RoutePrefix = "match-manager/dev";
     });
 }
 else if (app.Environment.IsProduction())
@@ -80,7 +79,6 @@ else if (app.Environment.IsProduction())
     app.UseSwaggerUI(option =>
     {
         option.DocumentTitle = "Match Manager API - PRODUCTION";
-        option.RoutePrefix = "match-manager/prod";
     });
 }
 
