@@ -68,7 +68,20 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(option =>
+    {
+        option.DocumentTitle = "Match Manager API - DEV";
+        option.RoutePrefix = "match-manager/dev";
+    });
+}
+else if (app.Environment.IsProduction())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(option =>
+    {
+        option.DocumentTitle = "Match Manager API - PRODUCTION";
+        option.RoutePrefix = "match-manager/prod";
+    });
 }
 
 app.UseHttpsRedirection();

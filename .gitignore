@@ -34,3 +34,12 @@
 /MatchManager/MatchManager.Web/bin/Debug/net7.0
 /MatchManager/MatchManager.Web/node_modules
 /MatchManager/MatchManager.Web/package-lock.json
+/MatchManager/MatchManager.API/.config/dotnet-tools.json
+/MatchManager/MatchManager.API/bin/Release/net7.0
+/MatchManager/MatchManager.Common/bin/Release/net7.0
+/MatchManager/MatchManager.Core/bin/Release/net7.0
+/MatchManager/MatchManager.Data/bin/Release/net7.0
+/MatchManager/MatchManager.Domain/bin/Release/net7.0
+/MatchManager/MatchManager.Infrastructure/bin/Release/net7.0
+/MatchManager/MatchManager.Services/bin/Release/net7.0
+/MatchManager/MatchManager.ViewModel/bin/Release/net7.0
