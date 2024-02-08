@@ -25,7 +25,7 @@ jobs:
         run: dotnet build ./MatchManager/MatchManager.sln --configuration Release --no-restore
         
       - name: Publish
-        run: dotnet publish ./MatchManager/MatchManager.API/MatchManager.API.csproj --configuration Release --no-build ./Release
+        run: dotnet publish ./MatchManager/MatchManager.API/ --configuration Release --no-build ./Release
 
       - name: Deployment
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
