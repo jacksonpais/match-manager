@@ -56,7 +56,7 @@ jobs:
         shell: python
         run: |
           import ftplib
-          with ftplib.FTP('${{ secrets.FTP_HOST }}') as ftp:
+          ftp = ftplib.FTP('${{ secrets.FTP_HOST }}')
           ftp.login('${{ secrets.FTP_USERNAME }}', '${{ secrets.FTP_PASSWORD }}')
           ftp.rename('app_offline.htm', '_app_offline.htm')
           ftp.quit()
