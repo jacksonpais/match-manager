@@ -11,29 +11,19 @@ jobs:
       name: 🎉 Deploy
       runs-on: ubuntu-latest
       steps:
-      - name: 🚚 Get latest code
-        uses: actions/checkout@v3
-        
-      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+      - uses: actions/checkout@v3
+      
+      - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: ${{ matrix.dotnet-version }}
-      - name: Install dependencies
-        run: dotnet restore
+          dotnet-version: '6.0.x'
+          
+      - name: Restore
+        run: dotnet restore ./MatchManager.sln
+        
       - name: Build
-        run: dotnet publish --configuration Release --no-restore
-
-      - name: 📂 Upload files via FTPS
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-        with:
-          server: my-real-domain.com
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./bin/Release/net6.0/publish/
-          server-dir: ./
-          protocol: ftps
-          dangerous-clean-slate: true
-          exclude: |
-            .cspell.json
-            package.json
-            package-lock.json
+        run: dotnet build ./MatchManager.sln --configuration Release --no-restore
+        
+      - name: Publish
+        run: dotnet publish ./MatchManager.sln --configuration Release --no-build --output '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
+        
