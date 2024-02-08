@@ -45,11 +45,12 @@ jobs:
           local-dir: ./Release/
           server-dir: ./
           protocol: ftps
-          dangerous-clean-slate: true
           exclude: |
             .cspell.json
             package.json
             package-lock.json
+            app_offline.htm
+            _app_offline.htm
             
       - name: Rename app_offline.htm back to _app_offline.htm to start the site
         shell: python
