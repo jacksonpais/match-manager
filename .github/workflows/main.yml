@@ -25,7 +25,7 @@ jobs:
         run: dotnet build ./MatchManager/MatchManager.sln --configuration Release --no-restore
         
       - name: Publish
-        run: dotnet publish ./MatchManager/MatchManager.sln --configuration Release --no-build
+        run: dotnet publish ./MatchManager/MatchManager.sln --configuration Release --no-build ./Release/Publish
 
       - name: Deployment
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -33,7 +33,7 @@ jobs:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./bin/Release/net6.0/publish/
+          local-dir: ./Release/Publish
           server-dir: ./
           protocol: ftps
           dangerous-clean-slate: true
