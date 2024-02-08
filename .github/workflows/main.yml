@@ -1,0 +1,39 @@
+name: 🚀 Deploy website via FTPS
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+permissions:
+  contents: write
+jobs:
+  web-deploy:
+      name: 🎉 Deploy
+      runs-on: ubuntu-latest
+      steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v3
+        
+      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet publish --configuration Release --no-restore
+
+      - name: 📂 Upload files via FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: my-real-domain.com
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./bin/Release/net6.0/publish/
+          server-dir: ./
+          protocol: ftps
+          dangerous-clean-slate: true
+          exclude: |
+            .cspell.json
+            package.json
+            package-lock.json
