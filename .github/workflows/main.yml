@@ -27,6 +27,15 @@ jobs:
       - name: Publish
         run: dotnet publish ./MatchManager/MatchManager.API/MatchManager.API.csproj --configuration Release --no-build --output ./Release
 
+      - name: Rename _app_offline.htm to app_offline.htm to stop the site
+        shell: python
+        run: |
+          import ftplib
+          ftp = ftplib.FTP('${{ secrets.FTP_HOST }}')
+          ftp.login('${{ secrets.FTP_USERNAME }}', '${{ secrets.FTP_PASSWORD }}')
+          ftp.rename('_app_offline.htm', 'app_offline.htm')
+          ftp.quit()
+
       - name: Deployment
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
