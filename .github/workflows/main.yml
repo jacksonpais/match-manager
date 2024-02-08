@@ -25,5 +25,5 @@ jobs:
         run: dotnet build ./MatchManager/MatchManager.sln --configuration Release --no-restore
         
       - name: Publish
-        run: dotnet publish ./MatchManager/MatchManager.sln --configuration Release --no-build --output '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
+        run: dotnet publish ./MatchManager/MatchManager.sln --configuration Release --no-build
         
