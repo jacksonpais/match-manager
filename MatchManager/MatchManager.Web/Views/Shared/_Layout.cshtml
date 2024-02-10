@@ -1,14 +1,21 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"] - MatchManager.Web</title>
     <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
+    <script type="text/javascript">
+        var api_url = @Configuration.GetSection("APIUrl");
+    </script>
 </head>
 <body>
     <main class="app">
         @RenderBody()
     </main>
+    <script src="~/js/scripts/utils.js"></script>
 </body>
 </html>
