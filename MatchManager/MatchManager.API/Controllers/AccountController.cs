@@ -2,13 +2,16 @@
 using MatchManager.Core.Services.Account.Interface;
 using MatchManager.DTO.Account;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
 namespace MatchManager.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/account")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
     [ApiController]
     public class AccountController : ControllerBase
     {
@@ -25,6 +28,7 @@ namespace MatchManager.API.Controllers
             _response = new Response();
         }
 
+        [EnableCors("_myAllowSpecificOrigins")]
         [AllowAnonymous]
         [HttpPost("register")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -63,6 +67,7 @@ namespace MatchManager.API.Controllers
             return Ok(_response);
         }
 
+        [EnableCors("_myAllowSpecificOrigins")]
         [AllowAnonymous]
         [HttpPost("login")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -92,6 +97,7 @@ namespace MatchManager.API.Controllers
             return Ok(_response);
         }
 
+        [EnableCors("_myAllowSpecificOrigins")]
         [AllowAnonymous]
         [HttpPost("verify")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

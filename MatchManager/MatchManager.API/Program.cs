@@ -12,6 +12,19 @@ var builder = WebApplication.CreateBuilder(args);
 Log.Logger = new LoggerConfiguration().MinimumLevel.Debug().WriteTo.File("logs/moneyca_.txt", rollingInterval: RollingInterval.Day).CreateLogger();
 builder.Host.UseSerilog();
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      builder =>
+                      {
+                          builder.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                      });
+});
+
 // Add services to the container.
 builder.Services.AddDbContext<DataContext>(option =>
 {
@@ -30,17 +43,6 @@ builder.Services.AddControllers(option =>
     option.Filters.Add(new AuthorizeFilter(policy));
     //option.ReturnHttpNotAcceptable=true;
 }).AddNewtonsoftJson().AddXmlDataContractSerializerFormatters();
-
-var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: MyAllowSpecificOrigins,
-                      builder =>
-                      {
-                          builder.WithOrigins(configuration["APIUrl"]);
-                      });
-});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -97,11 +99,20 @@ else if (app.Environment.IsProduction())
 
 app.UseHttpsRedirection();
 
-app.UseCors(MyAllowSpecificOrigins);
+app.UseCors(
+      x => x.WithOrigins(
+              "http://match-manager-api.silverrug.in/",
+              "http://localhost"       // this one should probably only run in develpment environment if you add
+            ).AllowAnyMethod()
+             .AllowAnyHeader()
+      );
 
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseStaticFiles();
+
+app.UseRouting();
 app.MapControllers();
 
 app.Run();
