@@ -14,17 +14,25 @@ builder.Host.UseSerilog();
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy(name: MyAllowSpecificOrigins,
+//                      option =>
+//                      {
+//                          option.AllowAnyOrigin()
+//                          .AllowAnyMethod()
+//                          .AllowAnyHeader();
+//                      });
+//});
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: MyAllowSpecificOrigins,
-                      builder =>
-                      {
-                          builder.AllowAnyOrigin()
-                          .AllowAnyMethod()
-                          .AllowAnyHeader();
-                      });
+    options.AddPolicy(name: "_myAllowSpecificOrigins",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:63600")
+                .AllowAnyMethod();
+        });
 });
-
 // Add services to the container.
 builder.Services.AddDbContext<DataContext>(option =>
 {
@@ -37,14 +45,6 @@ builder.Services.AddCore();
 
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 
-builder.Services.AddControllers(option =>
-{
-    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
-    option.Filters.Add(new AuthorizeFilter(policy));
-    //option.ReturnHttpNotAcceptable=true;
-}).AddNewtonsoftJson().AddXmlDataContractSerializerFormatters();
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -77,6 +77,13 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddControllers(option =>
+{
+    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+    option.Filters.Add(new AuthorizeFilter(policy));
+    //option.ReturnHttpNotAcceptable=true;
+}).AddNewtonsoftJson().AddXmlDataContractSerializerFormatters();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -98,21 +105,13 @@ else if (app.Environment.IsProduction())
 }
 
 app.UseHttpsRedirection();
-
-app.UseCors(
-      x => x.WithOrigins(
-              "http://match-manager-api.silverrug.in/",
-              "http://localhost"       // this one should probably only run in develpment environment if you add
-            ).AllowAnyMethod()
-             .AllowAnyHeader()
-      );
+app.UseStaticFiles();
+app.UseRouting();
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseStaticFiles();
-
-app.UseRouting();
 app.MapControllers();
 
 app.Run();
