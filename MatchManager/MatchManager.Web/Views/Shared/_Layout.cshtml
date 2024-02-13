@@ -9,7 +9,7 @@
     <title>@ViewData["Title"] - MatchManager.Web</title>
     <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
     <script type="text/javascript">
-        var api_url = @Configuration.GetSection("APIUrl");
+        localStorage.setItem("api_url", "https://match-manager-api.silverrug.in/api/");
     </script>
 </head>
 <body>

@@ -28,7 +28,6 @@ namespace MatchManager.API.Controllers
             _response = new Response();
         }
 
-        [EnableCors("_myAllowSpecificOrigins")]
         [AllowAnonymous]
         [HttpPost("register")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -36,38 +35,44 @@ namespace MatchManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Response>> Register([FromBody] RegisterRequestDTO registerDto)
         {
-            bool userExists = await _userService.IsUserPresent(registerDto.Email);
-            if (userExists)
+            try
             {
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.IsSuccess = false;
-                _response.ErrorMessages.Add("Username already exists");
-                return BadRequest(_response);
-            }
-            if (!string.Equals(registerDto.Password, registerDto.ConfirmPassword,
-                StringComparison.Ordinal))
-            {
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.IsSuccess = false;
-                _response.ErrorMessages.Add("Confirm password does not match");
-                return BadRequest(_response);
-            }
+                bool userExists = await _userService.IsUserPresent(registerDto.Email);
+                if (userExists)
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages.Add("Username already exists");
+                    return BadRequest(_response);
+                }
+                if (!string.Equals(registerDto.Password, registerDto.ConfirmPassword,
+                    StringComparison.Ordinal))
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages.Add("Confirm password does not match");
+                    return BadRequest(_response);
+                }
 
-            var registerResponse = await _userService.Register(registerDto);
-            if (registerResponse.IsSuccess == false)
-            {
-                _response.StatusCode = HttpStatusCode.InternalServerError;
-                _response.IsSuccess = false;
-                _response.ErrorMessages = Enumerable.Concat(_response.ErrorMessages, registerResponse.ErrorMessages).ToList();
-                return StatusCode(StatusCodes.Status500InternalServerError, _response);
+                var registerResponse = await _userService.Register(registerDto);
+                if (registerResponse.IsSuccess == false)
+                {
+                    _response.StatusCode = HttpStatusCode.InternalServerError;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages = Enumerable.Concat(_response.ErrorMessages, registerResponse.ErrorMessages).ToList();
+                    return StatusCode(StatusCodes.Status500InternalServerError, _response);
+                }
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = true;
+                _response.Result = registerResponse.Result;
             }
-            _response.StatusCode = HttpStatusCode.OK;
-            _response.IsSuccess = true;
-            _response.Result = registerResponse.Result;
+            catch (Exception ex)
+            {
+
+            }
             return Ok(_response);
         }
 
-        [EnableCors("_myAllowSpecificOrigins")]
         [AllowAnonymous]
         [HttpPost("login")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -97,7 +102,6 @@ namespace MatchManager.API.Controllers
             return Ok(_response);
         }
 
-        [EnableCors("_myAllowSpecificOrigins")]
         [AllowAnonymous]
         [HttpPost("verify")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
