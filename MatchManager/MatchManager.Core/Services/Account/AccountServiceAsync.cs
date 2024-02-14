@@ -88,7 +88,7 @@ namespace MatchManager.Core.Services.Account
                 }
                 return _result;
             }
-            catch (Exception ex)
+            catch
             {
                 _result.IsSuccess = false;
                 _result.ErrorMessages.Add("Error While Registrating User");
@@ -174,7 +174,7 @@ namespace MatchManager.Core.Services.Account
                         }
                     };
 
-                    _emailService.SendEmail(messageTemplate);
+                    await _emailService.SendEmail(messageTemplate);
 
                     _result.IsSuccess = true;
                     _result.Result = "Almost done! Your account has been created, but in order to proceed, please check your email and click the link inside to confirm your account.";
@@ -185,7 +185,7 @@ namespace MatchManager.Core.Services.Account
                     _result.ErrorMessages.Add("Error While Registrating User");
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 _result.IsSuccess = false;
                 _result.ErrorMessages.Add("Error While Registrating User");

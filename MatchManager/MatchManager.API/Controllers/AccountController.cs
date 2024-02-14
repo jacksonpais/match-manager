@@ -66,9 +66,8 @@ namespace MatchManager.API.Controllers
                 _response.IsSuccess = true;
                 _response.Result = registerResponse.Result;
             }
-            catch (Exception ex)
+            catch
             {
-
             }
             return Ok(_response);
         }

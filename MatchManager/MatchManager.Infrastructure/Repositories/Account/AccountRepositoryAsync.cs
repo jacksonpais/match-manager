@@ -78,10 +78,6 @@ namespace MatchManager.Infrastructure.Repositories.Account
             if (userid != 0)
             {
                 AppUserMaster user = await GetUser(userid);
-                //UserToken userToken = await GetUserToken(userid);
-                //List<UserActivation> userActivations = await GetUserActivations(userid);
-                //user.UserActivation = userActivations;
-                //user.UserToken = userToken;
                 return _mapper.Map<LoginUser>(user);
             }
             else

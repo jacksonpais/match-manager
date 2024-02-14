@@ -82,7 +82,7 @@ namespace MatchManager.Services.Email
                 await smtpClient.SendMailAsync(message);
                 smtpClient.Dispose();
             }
-            catch (Exception ex)
+            catch
             {
             }
         }
