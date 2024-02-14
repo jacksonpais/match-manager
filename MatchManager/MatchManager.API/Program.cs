@@ -14,22 +14,12 @@ builder.Host.UseSerilog();
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy(name: MyAllowSpecificOrigins,
-//                      option =>
-//                      {
-//                          option.AllowAnyOrigin()
-//                          .AllowAnyMethod()
-//                          .AllowAnyHeader();
-//                      });
-//});
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "_myAllowSpecificOrigins",
         policy =>
         {
-            policy.WithOrigins("http://localhost:63600")
+            policy.WithOrigins("http://localhost:5240")
                 .AllowAnyMethod()
                 .AllowAnyHeader();
         });
