@@ -8,9 +8,12 @@ using MatchManager.Domain.Entities.User;
 using MatchManager.Domain.Enums;
 using MatchManager.DTO.Account;
 using MatchManager.Infrastructure.Repositories.Account.Interface;
+using MatchManager.Services.Email.Interface;
+using MatchManager.Services.Email.Model;
 using MatchManager.Services.Secure;
 using MatchManager.Services.SecurityService.Interface;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Configuration;
 
 namespace MatchManager.Core.Services.Account
 {
@@ -22,14 +25,18 @@ namespace MatchManager.Core.Services.Account
         private readonly ITokenService _tokenService;
         private readonly ISecureService _secureService;
         private readonly IDataProtectionProvider _iDataProtectionProvider;
+        private readonly IEmailService _emailService;
+        private readonly IConfiguration _configuration;
 
-        public AccountServiceAsync(IAccountRepositoryAsync accountRepository, IMapper mapper, ITokenService tokenService, ISecureService secureService, IDataProtectionProvider iDataProtectionProvider)
+        public AccountServiceAsync(IAccountRepositoryAsync accountRepository, IMapper mapper, ITokenService tokenService, ISecureService secureService, IDataProtectionProvider iDataProtectionProvider, IEmailService emailService, IConfiguration configuration)
         {
             _accountRepository = accountRepository;
             _mapper = mapper;
             _tokenService = tokenService;
             _secureService = secureService;
             _iDataProtectionProvider = iDataProtectionProvider;
+            _emailService = emailService;
+            _configuration = configuration;
             _result = new CoreResult();
         }
 
@@ -149,23 +156,25 @@ namespace MatchManager.Core.Services.Account
                     _accountRepository.SaveUserActivation(activations);
                     await _accountRepository.SaveChangesToDBAsync();
 
-                    //var body = _emailSender.CreateRegistrationVerificationEmail(user, Properties.Resource.DomainUrl + Properties.Resource.RegistrationVerificationUrl, Properties.Resource.MainEmail);
-                    //MessageTemplate messageTemplate = new MessageTemplate()
-                    //{
-                    //    ToAddress = user.Email,
-                    //    Subject = "Welcome to MeetApp",
-                    //    Body = body,
-                    //    EmailProperties = new EmailProperties()
-                    //    {
-                    //        Email = Convert.ToString(Properties.Resource.Email).Trim(),
-                    //        Password = Convert.ToString(Properties.Resource.Password).Trim(),
-                    //        Host = Convert.ToString(Properties.Resource.MailHost).Trim(),
-                    //        Port = Convert.ToInt32(Properties.Resource.MailPort),
-                    //        DisplayName = Convert.ToString(Properties.Resource.AppName).Trim()
-                    //    }
-                    //};
+                    var body = _emailService.CreateRegistrationVerificationEmail(appUser, _configuration["APIUrl"] + _configuration["RegistrationVerificationUrl"], _configuration["mainEmail"]);
+                    MessageTemplate messageTemplate = new MessageTemplate()
+                    {
+                        ToAddress = appUser.Email,
+                        Subject = "Welcome to MeetApp",
+                        Body = body,
+                        Bcc = new List<string>(),
+                        Cc = new List<string>(),
+                        EmailProperties = new EmailProperties()
+                        {
+                            Email = Convert.ToString(_configuration["Email"]).Trim(),
+                            Password = Convert.ToString(_configuration["Password"]).Trim(),
+                            Host = Convert.ToString(_configuration["MailHost"]).Trim(),
+                            Port = Convert.ToInt32(_configuration["MailPort"]),
+                            DisplayName = Convert.ToString(_configuration["AppName"]).Trim()
+                        }
+                    };
 
-                    //_emailSender.SendMailusingSmtp(messageTemplate);
+                    _emailService.SendEmail(messageTemplate);
 
                     _result.IsSuccess = true;
                     _result.Result = "Almost done! Your account has been created, but in order to proceed, please check your email and click the link inside to confirm your account.";

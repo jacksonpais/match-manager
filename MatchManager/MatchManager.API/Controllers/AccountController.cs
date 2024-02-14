@@ -103,7 +103,7 @@ namespace MatchManager.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("verify")]
+        [HttpGet("registration/verify")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -125,7 +125,7 @@ namespace MatchManager.API.Controllers
                 }
                 _response.StatusCode = HttpStatusCode.OK;
                 _response.IsSuccess = true;
-                _response.Result = null; //loginResponse.Result;
+                _response.Result = loginResponse.Result;
                 return Ok(_response);
             }
             else
