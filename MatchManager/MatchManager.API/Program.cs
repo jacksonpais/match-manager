@@ -1,9 +1,11 @@
 using MatchManager.Core.Extensions;
 using MatchManager.Core.Mappings;
 using MatchManager.Data.Context;
+using MatchManager.Domain.Config;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.OpenApi.Models;
 using Serilog;
 
@@ -11,6 +13,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 Log.Logger = new LoggerConfiguration().MinimumLevel.Debug().WriteTo.File("logs/moneyca_.txt", rollingInterval: RollingInterval.Day).CreateLogger();
 builder.Host.UseSerilog();
+
+IConfiguration configuration = builder.Configuration;
+
+builder.Services.Configure<AppConfig>(configuration.GetSection("AppConfig"));
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -29,8 +35,6 @@ builder.Services.AddDbContext<DataContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
 });
-
-IConfiguration configuration = builder.Configuration;
 
 builder.Services.AddCore();
 

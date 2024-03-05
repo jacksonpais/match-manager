@@ -1,10 +1,12 @@
 ﻿using MatchManager.Core;
 using MatchManager.Core.Services.Account.Interface;
+using MatchManager.Domain.Config;
 using MatchManager.DTO.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System.Net;
 
 namespace MatchManager.API.Controllers
@@ -18,13 +20,15 @@ namespace MatchManager.API.Controllers
         private readonly IAccountServiceAsync _userService;
         private readonly ILogger<AccountController> _logger;
         public IDataProtectionProvider _iDataProtectionProvider;
+        private readonly IOptions<AppConfig> _appConfig;
         protected Response _response;
 
-        public AccountController(IAccountServiceAsync userService, ILogger<AccountController> logger, IDataProtectionProvider iDataProtectionProvider)
+        public AccountController(IAccountServiceAsync userService, ILogger<AccountController> logger, IDataProtectionProvider iDataProtectionProvider, IOptions<AppConfig> appConfig)
         {
             _logger = logger;
             _userService = userService;
             _iDataProtectionProvider = iDataProtectionProvider;
+            _appConfig = appConfig;
             _response = new Response();
         }
 
@@ -134,6 +138,41 @@ namespace MatchManager.API.Controllers
                 _response.ErrorMessages.Add("Key or token is Invalid");
                 return BadRequest(_response);
             }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("request/verify/email")]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Response>> RequestVerificationLink([FromBody] RequestVericationLinkDTO requestDto)
+        {
+            try
+            {
+                bool userExists = await _userService.IsUserPresent(requestDto.UserName);
+                if (!userExists)
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages.Add("Entered Email is Invalid");
+                    return BadRequest(_response);
+                }
+                var verificationResponse = await _userService.RequestVerificationLink(requestDto);
+                if (verificationResponse.IsSuccess == false)
+                {
+                    _response.StatusCode = HttpStatusCode.InternalServerError;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages = Enumerable.Concat(_response.ErrorMessages, verificationResponse.ErrorMessages).ToList();
+                    return StatusCode(StatusCodes.Status500InternalServerError, _response);
+                }
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = true;
+                _response.Result = verificationResponse.Result;
+            }
+            catch
+            {
+            }
+            return Ok(_response);
         }
     }
 }
