@@ -80,7 +80,7 @@ namespace MatchManager.Core.Services.Account
                         if (string.Equals(user.PasswordHash, generatedhash, StringComparison.Ordinal))
                         {
                             LoginUser loginUser = await _accountRepository.LoginUser(user.UserId);
-                            _result.Result = CreateUserObject(loginUser);
+                            _result.Result = CreateTokenObject(loginUser);
                             _result.IsSuccess = true;
                         }
                         else
@@ -181,7 +181,7 @@ namespace MatchManager.Core.Services.Account
                     await _emailService.SendEmail(messageTemplate);
 
                     _result.IsSuccess = true;
-                    _result.Result = "Almost done! Your account has been created, but in order to proceed, please check your email and click the link inside to confirm your account.";
+                    _result.Result = "Your account has been created, in order to proceed, please check your email and click the link inside to confirm your account.";
                 }
                 else
                 {
@@ -197,14 +197,11 @@ namespace MatchManager.Core.Services.Account
             return _result;
         }
 
-        private UserDTO CreateUserObject(LoginUser loginUser)
+        private TokenDTO CreateTokenObject(LoginUser loginUser)
         {
-            return new UserDTO
+            return new TokenDTO
             {
-                FirstName = loginUser.FirstName,
-                LastName = loginUser.LastName,
-                UserName = loginUser.UserName,
-                Token = _tokenService.CreateToken(loginUser),
+                AccessToken = _tokenService.CreateToken(loginUser),
             };
         }
 
@@ -252,7 +249,7 @@ namespace MatchManager.Core.Services.Account
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 _result.IsSuccess = false;
                 _result.ErrorMessages.Add("Sorry Verification Failed Please request a new Verification link!");
@@ -267,19 +264,20 @@ namespace MatchManager.Core.Services.Account
                 AppUserMaster appUser = await _accountRepository.GetUser(request.UserName);
                 if (appUser.UserId != 0)
                 {
+                    LoginUser login = await _accountRepository.LoginUser(appUser.UserId);
                     var emailToken = HashHelper.CreateHashSHA256((GenerateRandomNumbers.GenerateRandomDigitCode(6)));
                     Enum.TryParse(request.VerificationType, out ActivationType activationType);
-                    //UserActivation activation = await _accountRepository.GetUserActivation(appUser.UserId, activationType);
-                    //activation.ActivationToken = emailToken;
-                    //activation.ActivationDate = DateTime.Now;
+                    UserActivation activation = await _accountRepository.GetUserActivation(appUser.UserId, activationType);
+                    activation.ActivationToken = emailToken;
+                    activation.IsActive = false;
 
-                    //_accountRepository.SaveUserActivation(activation);
-                    //await _accountRepository.SaveChangesToDBAsync();
+                    _accountRepository.SaveUserActivation(activation);
+                    await _accountRepository.SaveChangesToDBAsync();
 
                     AESAlgorithm aesAlgorithm = new AESAlgorithm();
                     var key = string.Join(":", new string[] { DateTime.Now.Ticks.ToString(), appUser.UserId.ToString() });
                     var encrypt = aesAlgorithm.EncryptToBase64String(key);
-                    var linktoverify = $"{_appConfig.Value.Urls.DomainUrl + _appConfig.Value.Urls.RegistrationVerificationUrl}?key={HttpUtility.UrlEncode(encrypt)}&hashtoken={HttpUtility.UrlEncode(appUser.UserActivation.Where(a => a.TokenType == Convert.ToString(ActivationType.email)).FirstOrDefault().ActivationToken)}";
+                    var linktoverify = $"{_appConfig.Value.Urls.DomainUrl + "account/verify"}?key={HttpUtility.UrlEncode(encrypt)}&hashtoken={HttpUtility.UrlEncode(login.Activations.Where(a => a.TokenType == Convert.ToString(ActivationType.email)).FirstOrDefault().ActivationToken)}";
 
                     _result.IsSuccess = true;
                     _result.Result = linktoverify;

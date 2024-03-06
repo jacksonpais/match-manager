@@ -36,10 +36,10 @@ namespace MatchManager.Domain.Entities.Account
         public required bool IsFirstTimeLoggedInUser { get; set; }
 
         [ForeignKey("UserId")]
-        public required UserToken UserToken { get; set; }
+        public required UserToken Token { get; set; }
 
         [ForeignKey("UserId")]
-        public required List<UserActivation> UserActivation { get; set; }
+        public required List<UserActivation> Activations { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
     }

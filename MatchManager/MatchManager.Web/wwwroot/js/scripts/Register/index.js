@@ -104,11 +104,13 @@ RegisterHelper.prototype = {
         let data = await result.json();
         if (data.isSuccess) {
             document.getElementById("successMessage").classList.remove("hidden");
-            document.getElementById("successMessage").innerHTML = "Almost done! Your account has been created, but in order to proceed, please check your email and click the link inside to confirm your account.";
+            document.getElementById("successMessage").firstElementChild.nextElementSibling.innerHTML = data.result;
+            registerHelper._clearFields();
         } else {
             document.getElementById("errorMessage").classList.remove("hidden");
-            document.getElementById("errorMessage").innerHTML = data.errorMessages[0];
+            document.getElementById("errorMessage").firstElementChild.nextElementSibling.innerHTML = data.errorMessages[0];
         }
+        return false;
     },
     _clearFields: function () {
         document.getElementById("user_first_name").value = "";

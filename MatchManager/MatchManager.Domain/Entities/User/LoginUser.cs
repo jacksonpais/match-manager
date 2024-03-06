@@ -16,7 +16,7 @@ namespace MatchManager.Domain.Entities.User
         public int GenderId { get; set; }
         public string Description { get; set; }
         public bool IsFirstTimeLoggedInUser { get; set; }
-        public UserToken UserToken { get; set; }
-        public List<UserActivation> Activation { get; set; }
+        public UserToken Token { get; set; }
+        public List<UserActivation> Activations { get; set; }
     }
 }

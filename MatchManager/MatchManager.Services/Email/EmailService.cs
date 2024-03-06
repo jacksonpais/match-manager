@@ -21,7 +21,7 @@ namespace MatchManager.Services.Email
             AESAlgorithm aesAlgorithm = new AESAlgorithm();
             var key = string.Join(":", new string[] { DateTime.Now.Ticks.ToString(), user.UserId.ToString() });
             var encrypt = aesAlgorithm.EncryptToBase64String(key);
-            var linktoverify = $"{url}?key={HttpUtility.UrlEncode(encrypt)}&hashtoken={HttpUtility.UrlEncode(user.UserActivation.Where(a => a.TokenType == Convert.ToString(ActivationType.email)).FirstOrDefault().ActivationToken)}";
+            var linktoverify = $"{url}?key={HttpUtility.UrlEncode(encrypt)}&hashtoken={HttpUtility.UrlEncode(user.Activations.Where(a => a.TokenType == Convert.ToString(ActivationType.email)).FirstOrDefault().ActivationToken)}";
             var stringtemplate = new StringBuilder();
             stringtemplate.Append("<table style='width: 500px; background-color: #fff; border-radius: 5px; border: 2px #33BDD1 solid; margin: 0 auto; font-family: Arial,Tahoma; font-size: 14px; color: #045489; line-height: 20px;'>");
             stringtemplate.Append("<tr><td style='padding-top:10px; vertical-align:middle;text-align:center;padding-bottom:5px;border-bottom:2px solid #33BDD1;background-color:#22788c'><p style='margin:0px auto; font-size: 18px; padding-bottom: 0px; color: #045489; text-align: center; '><img width='30' height='30' src='' style='margin-right: 5px;'><img img width='155' height='25' src=''></p></td></tr>");

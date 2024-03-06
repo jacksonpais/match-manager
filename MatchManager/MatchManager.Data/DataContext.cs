@@ -18,8 +18,8 @@ namespace MatchManager.Data.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<AppUserMaster>().HasOne(e => e.UserToken).WithOne(ed => ed.UserMaster).HasForeignKey<UserToken>(ed => ed.UserId);
-            modelBuilder.Entity<AppUserMaster>().HasMany(e => e.UserActivation).WithOne(ed => ed.UserMaster).HasForeignKey(ed => ed.UserId);
+            modelBuilder.Entity<AppUserMaster>().HasOne(e => e.Token).WithOne(ed => ed.UserMaster).HasForeignKey<UserToken>(ed => ed.UserId);
+            modelBuilder.Entity<AppUserMaster>().HasMany(e => e.Activations).WithOne(ed => ed.UserMaster).HasForeignKey(ed => ed.UserId);
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
