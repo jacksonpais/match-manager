@@ -2,20 +2,20 @@
 
 namespace MatchManager.Services.Communication
 {
-    public class CommunicateClient
+    public class CommunicationClient
     {
         private ICommunicationSerice communicationService;
 
         //Constructor: assigns strategy to interface  
-        public CommunicateClient(ICommunicationSerice _communicationService)
+        public CommunicationClient(ICommunicationSerice _communicationService)
         {
             communicationService = _communicationService;
         }
 
         //Executes the strategy  
-        public async Task SendAsync()
+        public async Task<bool> SendAsync()
         {
-            await communicationService.SendAsync();
+            return await communicationService.SendAsync();
         }
     }
 }

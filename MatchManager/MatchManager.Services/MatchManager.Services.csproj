@@ -14,8 +14,4 @@
     <ProjectReference Include="..\MatchManager.Domain\MatchManager.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Communication\Email\Helper\" />
-  </ItemGroup>
-
 </Project>

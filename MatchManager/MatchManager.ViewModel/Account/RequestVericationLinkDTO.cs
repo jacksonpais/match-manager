@@ -11,5 +11,8 @@ namespace MatchManager.DTO.Account
 
         [Required(ErrorMessage = "Enter a valid verification type")]
         public required string VerificationType { get; set; }
+
+        [Required(ErrorMessage = "Enter the Communication Type (email)")]
+        public required string CommunicationType { get; set;}
     }
 }

@@ -4,8 +4,6 @@ using MatchManager.Core.Services.Token;
 using MatchManager.Core.Services.Token.Interface;
 using MatchManager.Infrastructure.Repositories.Account;
 using MatchManager.Infrastructure.Repositories.Account.Interface;
-using MatchManager.Services.Email;
-using MatchManager.Services.Email.Interface;
 using MatchManager.Services.SecurityService;
 using MatchManager.Services.SecurityService.Interface;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +18,6 @@ namespace MatchManager.Core.Extensions
             services.AddTransient<IAccountServiceAsync, AccountServiceAsync>();
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<ISecureService, SecureService>();
-            services.AddTransient<IEmailService, EmailService>();
             services.AddDataProtection();
 
             //Repository

@@ -4,6 +4,6 @@
     {
         public string Subject { get; set; }
         public string Message { get; set; }
-        Task SendAsync();
+        Task<bool> SendAsync();
     }
 }

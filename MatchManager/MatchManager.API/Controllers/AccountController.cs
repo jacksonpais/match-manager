@@ -141,7 +141,7 @@ namespace MatchManager.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("register/request-verification/email")]
+        [HttpPost("register/request-verification")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]

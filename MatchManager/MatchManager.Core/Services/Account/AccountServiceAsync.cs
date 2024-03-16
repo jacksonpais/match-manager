@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using MatchManager.Common;
 using MatchManager.Core.Services.Account.Interface;
-using MatchManager.Core.Services.Communication.Interface;
 using MatchManager.Core.Services.Token.Interface;
 using MatchManager.Core.Wrappers;
 using MatchManager.Domain.Config;
@@ -159,12 +158,18 @@ namespace MatchManager.Core.Services.Account
                     _accountRepository.SaveUserActivation(activations);
                     await _accountRepository.SaveChangesToDBAsync();
 
-                    var body = emailService.CreateRegistrationVerificationEmail(appUser, _appConfig.Value.Urls.DomainUrl + _appConfig.Value.Urls.RegistrationVerificationUrl, _appConfig.Value.EmailConfiguration.Email);
+                    MessageCreator messageCreator = new MessageCreator(new EmailMessage());
+                    AESAlgorithm aesAlgorithm = new AESAlgorithm();
+                    var key = string.Join(":", new string[] { DateTime.Now.Ticks.ToString(), appUser.UserId.ToString() });
+                    var encrypt = aesAlgorithm.EncryptToBase64String(key);
+                    var linktoverify = $"{_appConfig.Value.Urls.UIDomainUrl + _appConfig.Value.Urls.RegistrationVerificationUrl}?key={HttpUtility.UrlEncode(encrypt)}&hashtoken={HttpUtility.UrlEncode(appUser.Activations.Where(a => a.TokenType == Convert.ToString(ActivationType.email)).FirstOrDefault().ActivationToken)}";
+                    string name = $"{appUser.FirstName} {appUser.LastName}";
+                    string message = messageCreator.CreateRegistrationVerificationMessage(name, linktoverify, _appConfig.Value.EmailConfiguration.Email);
 
-                    CommunicateClient emailClient = new CommunicateClient(new EmailService() 
+                    CommunicationClient emailClient = new CommunicationClient(new EmailService() 
                     {
                         Subject = "Welcome to MeetApp",
-                        Message = ,
+                        Message = message,
                         Receiver = new EmailReceiver()
                         {
                             Bcc = new List<string>(),
@@ -180,7 +185,16 @@ namespace MatchManager.Core.Services.Account
                             DisplayName = _appConfig.Value.AppName.Trim()
                         }
                     });
-                    await emailClient.SendAsync(messageTemplate);
+                    bool emailResult = await emailClient.SendAsync();
+                    if (emailResult)
+                    {
+                        _result.Result = "Please check your email and click the link inside to confirm your account.";
+                    }
+                    else
+                    {
+                        _result.Result = "Error While sending activation link email";
+                    }
+                    _result.IsSuccess = emailResult;
 
                     _result.IsSuccess = true;
                     _result.Result = "Your account has been created, in order to proceed, please check your email and click the link inside to confirm your account.";
@@ -241,6 +255,7 @@ namespace MatchManager.Core.Services.Account
                             if (userActivation.IsActive)
                             {
                                 _result.IsSuccess = true;
+                                _result.Result = "You have successfully verified your account. You can proceed with login";
                             }
                             else
                             {
@@ -279,10 +294,42 @@ namespace MatchManager.Core.Services.Account
                     AESAlgorithm aesAlgorithm = new AESAlgorithm();
                     var key = string.Join(":", new string[] { DateTime.Now.Ticks.ToString(), appUser.UserId.ToString() });
                     var encrypt = aesAlgorithm.EncryptToBase64String(key);
-                    var linktoverify = $"{_appConfig.Value.Urls.DomainUrl + "account/verify"}?key={HttpUtility.UrlEncode(encrypt)}&hashtoken={HttpUtility.UrlEncode(login.Activations.Where(a => a.TokenType == Convert.ToString(ActivationType.email)).FirstOrDefault().ActivationToken)}";
+                    var linktoverify = $"{_appConfig.Value.Urls.UIDomainUrl + _appConfig.Value.Urls.RegistrationVerificationUrl}?key={HttpUtility.UrlEncode(encrypt)}&hashtoken={HttpUtility.UrlEncode(appUser.Activations.Where(a => a.TokenType == Convert.ToString(ActivationType.email)).FirstOrDefault().ActivationToken)}";
 
-                    _result.IsSuccess = true;
-                    _result.Result = linktoverify;
+                    MessageCreator messageCreator = new MessageCreator(new EmailMessage());
+                    string name = $"{appUser.FirstName} {appUser.LastName}";
+                    string message = messageCreator.CreateRegistrationVerificationMessage(name, linktoverify, _appConfig.Value.EmailConfiguration.Email);
+
+                    CommunicationClient emailClient = new CommunicationClient(new EmailService()
+                    {
+                        Subject = "Welcome to MeetApp",
+                        Message = message,
+                        Receiver = new EmailReceiver()
+                        {
+                            Bcc = new List<string>(),
+                            Cc = new List<string>(),
+                            ToAddress = appUser.Email
+                        },
+                        EmailProperties = new EmailProperties()
+                        {
+                            Email = _appConfig.Value.EmailConfiguration.Email.Trim(),
+                            Password = _appConfig.Value.EmailConfiguration.Password.Trim(),
+                            Host = _appConfig.Value.EmailConfiguration.MailHost.Trim(),
+                            Port = _appConfig.Value.EmailConfiguration.MailPort,
+                            DisplayName = _appConfig.Value.AppName.Trim()
+                        }
+                    });
+                    bool emailResult = await emailClient.SendAsync();
+                    if (emailResult)
+                    {
+                        _result.Result = "Please check your email and click the link inside to confirm your account.";
+                    }
+                    else
+                    {
+                        _result.ErrorMessages.Add("Error While sending activation link email");
+                    }
+                    _result.IsSuccess = emailResult;
+                    
                 }
                 else
                 {

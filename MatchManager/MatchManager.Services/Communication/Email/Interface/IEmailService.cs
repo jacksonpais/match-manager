@@ -9,7 +9,5 @@ namespace MatchManager.Services.Communication.Email.Interface
     {
         public EmailReceiver Receiver { get; set; }
         public EmailProperties EmailProperties { get; set; }
-        string CreateRegistrationVerificationEmail(AppUserMaster user, string url, string mainEmail);
-        string CreateResetPasswordVerificationEmail(LoginUser user, string url, string mainEmail);
     }
 }
