@@ -13,10 +13,12 @@ RegisterVerificationHelper.prototype = {
         this.btnVerify.addEventListener("click", registerVerificationHelper._verifyAccount)
     },
     _verifyAccount: async function () {
+        registerVerificationHelper.successMessage.classList.add("hidden");
+        registerVerificationHelper.errorMessage.classList.add("hidden");
         let data = {};
         try {
             const urlParams = new URLSearchParams(window.location.search);
-            const response = fetch(registerVerificationHelper.apiUrl + "account/registration/verify?" + urlParams, {
+            const response = fetch(registerVerificationHelper.apiUrl + "account/register/verification?" + urlParams, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -31,7 +33,8 @@ RegisterVerificationHelper.prototype = {
         }
         if (data.isSuccess) {
             registerVerificationHelper.successMessage.classList.remove("hidden");
-            registerVerificationHelper.successMessage.firstElementChild.nextElementSibling.innerHTML = data.errorMessages[0];
+            registerVerificationHelper.successMessage.firstElementChild.nextElementSibling.innerHTML = data.result;
+            registerVerificationHelper.btnVerify.classList.add("hidden")
         } else {
             registerVerificationHelper.errorMessage.classList.remove("hidden");
             registerVerificationHelper.errorMessage.firstElementChild.nextElementSibling.innerHTML = data.errorMessages[0];

@@ -18,8 +18,9 @@
 
     public partial class Urls
     {
-        public required Uri DomainUrl { get; set; }
+        public required Uri APIDomainUrl { get; set; }
         public required Uri ApiUrl { get; set; }
         public required string RegistrationVerificationUrl { get; set; }
+        public required Uri UIDomainUrl { get; set; }
     }
 }

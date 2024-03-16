@@ -1,5 +1,4 @@
 ﻿var VerificationRequestHelper = function () {
-    debugger
     this.form = document.getElementById("verification_form");
     this.verificationObj = {};
     this.apiUrl = localStorage.getItem("api_url");
@@ -17,7 +16,8 @@ VerificationRequestHelper.prototype = {
         if (e.preventDefault) e.preventDefault();
         verificationRequestHelper.verificationObj = {
             username: document.getElementById("user_email").value,
-            verificationtype:"email"
+            verificationtype: "email",
+            "communicationType": "email"
         }
         if (verificationRequestHelper._validateForm(verificationRequestHelper.verificationObj)) {
             verificationRequestHelper._submitForm();
@@ -54,7 +54,7 @@ VerificationRequestHelper.prototype = {
     _submitForm: async function () {
         document.getElementById("successMessage").classList.add("hidden");
         document.getElementById("errorMessage").classList.add("hidden");
-        const response = fetch(this.apiUrl + "account/registration/request-verification", {
+        const response = fetch(this.apiUrl + "account/register/request-verification", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
