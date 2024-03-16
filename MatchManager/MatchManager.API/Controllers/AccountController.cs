@@ -106,7 +106,7 @@ namespace MatchManager.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("registration/verify")]
+        [HttpGet("register/verification")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -141,37 +141,31 @@ namespace MatchManager.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("request/verify/email")]
+        [HttpPost("register/request-verification/email")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Response>> RequestVerificationLink([FromBody] RequestVericationLinkDTO requestDto)
         {
-            try
+            bool userExists = await _userService.IsUserPresent(requestDto.UserName);
+            if (!userExists)
             {
-                bool userExists = await _userService.IsUserPresent(requestDto.UserName);
-                if (!userExists)
-                {
-                    _response.StatusCode = HttpStatusCode.BadRequest;
-                    _response.IsSuccess = false;
-                    _response.ErrorMessages.Add("Entered Email is Invalid");
-                    return BadRequest(_response);
-                }
-                var verificationResponse = await _userService.RequestVerificationLink(requestDto);
-                if (verificationResponse.IsSuccess == false)
-                {
-                    _response.StatusCode = HttpStatusCode.InternalServerError;
-                    _response.IsSuccess = false;
-                    _response.ErrorMessages = Enumerable.Concat(_response.ErrorMessages, verificationResponse.ErrorMessages).ToList();
-                    return StatusCode(StatusCodes.Status500InternalServerError, _response);
-                }
-                _response.StatusCode = HttpStatusCode.OK;
-                _response.IsSuccess = true;
-                _response.Result = verificationResponse.Result;
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("Entered Email is Invalid");
+                return BadRequest(_response);
             }
-            catch
+            var verificationResponse = await _userService.RequestVerificationLink(requestDto);
+            if (verificationResponse.IsSuccess == false)
             {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = Enumerable.Concat(_response.ErrorMessages, verificationResponse.ErrorMessages).ToList();
+                return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
+            _response.StatusCode = HttpStatusCode.OK;
+            _response.IsSuccess = true;
+            _response.Result = verificationResponse.Result;
             return Ok(_response);
         }
     }

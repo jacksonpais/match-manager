@@ -1,22 +1,26 @@
 ﻿using MatchManager.Domain.Entities.Account;
 using MatchManager.Domain.Entities.User;
 using MatchManager.Domain.Enums;
-using MatchManager.Services.Email.Interface;
-using MatchManager.Services.Email.Model;
+using MatchManager.Services.Communication.Email.Interface;
+using MatchManager.Services.Communication.Email.Model;
+using MatchManager.Services.Communication.Interface;
 using MatchManager.Services.Secure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Mail;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 
-namespace MatchManager.Services.Email
+namespace MatchManager.Services.Communication.Email
 {
     public class EmailService : IEmailService
     {
+        public EmailService() { }
+        public required string Subject { get; set; }
+        public required string Message { get; set; }
+        public required EmailReceiver Receiver { get; set; }
+        public required EmailProperties EmailProperties { get; set; }
+
         public string CreateRegistrationVerificationEmail(AppUserMaster user, string url, string mainEmail)
+
         {
             AESAlgorithm aesAlgorithm = new AESAlgorithm();
             var key = string.Join(":", new string[] { DateTime.Now.Ticks.ToString(), user.UserId.ToString() });
@@ -38,35 +42,37 @@ namespace MatchManager.Services.Email
             throw new NotImplementedException();
         }
 
-        public async Task SendEmail(MessageTemplate messageTemplate)
+        public Task SendAsync()
         {
             MailMessage message = new MailMessage();
             SmtpClient smtpClient = new SmtpClient();
             try
             {
-                MailAddress mailAddress = new MailAddress(messageTemplate.EmailProperties.Email, messageTemplate.EmailProperties.DisplayName);
+                EmailProperties emailProperties = (EmailProperties)messageTemplate.EmailProperties;
+                EmailReceiver emailReceiever = (EmailReceiver)messageTemplate.Receiver;
+                MailAddress mailAddress = new MailAddress(emailProperties.Email, emailProperties.DisplayName);
                 message.From = mailAddress;
-                message.To.Add(messageTemplate.ToAddress);
+                message.To.Add(emailReceiever.ToAddress);
                 message.Subject = messageTemplate.Subject;
                 message.IsBodyHtml = true;
 
-                if (messageTemplate.Bcc != null)
+                if (emailReceiever.Bcc != null)
                 {
-                    foreach (var address in messageTemplate.Bcc.Where(bccValue => !string.IsNullOrWhiteSpace(bccValue)))
+                    foreach (var address in emailReceiever.Bcc.Where(bccValue => !string.IsNullOrWhiteSpace(bccValue)))
                     {
                         message.Bcc.Add(address.Trim());
                     }
                 }
 
-                if (messageTemplate.Cc != null)
+                if (emailReceiever.Cc != null)
                 {
-                    foreach (var address in messageTemplate.Cc.Where(ccValue => !string.IsNullOrWhiteSpace(ccValue)))
+                    foreach (var address in emailReceiever.Cc.Where(ccValue => !string.IsNullOrWhiteSpace(ccValue)))
                     {
                         message.CC.Add(address.Trim());
                     }
                 }
 
-                message.Body = messageTemplate.Body;
+                message.Body = messageTemplate.Message;
 
                 smtpClient.Host = "relay-hosting.secureserver.net";
                 smtpClient.Port = 25;
@@ -75,7 +81,7 @@ namespace MatchManager.Services.Email
                 //smtpClient.Port = messageTemplate.EmailProperties.Port;
 
                 smtpClient.UseDefaultCredentials = false;
-                smtpClient.Credentials = new System.Net.NetworkCredential(messageTemplate.EmailProperties.Email, messageTemplate.EmailProperties.Password);
+                smtpClient.Credentials = new System.Net.NetworkCredential(emailProperties.Email, emailProperties.Password);
 
                 //smtpClient.EnableSsl = true;
 

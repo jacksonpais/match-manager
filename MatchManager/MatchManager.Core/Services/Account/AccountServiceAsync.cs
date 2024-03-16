@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MatchManager.Common;
 using MatchManager.Core.Services.Account.Interface;
+using MatchManager.Core.Services.Communication.Interface;
 using MatchManager.Core.Services.Token.Interface;
 using MatchManager.Core.Wrappers;
 using MatchManager.Domain.Config;
@@ -9,15 +10,15 @@ using MatchManager.Domain.Entities.User;
 using MatchManager.Domain.Enums;
 using MatchManager.DTO.Account;
 using MatchManager.Infrastructure.Repositories.Account.Interface;
-using MatchManager.Services.Email.Interface;
-using MatchManager.Services.Email.Model;
+using MatchManager.Services.Communication;
+using MatchManager.Services.Communication.Email;
+using MatchManager.Services.Communication.Email.Model;
 using MatchManager.Services.Secure;
 using MatchManager.Services.SecurityService.Interface;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System.Web;
-using System;
 
 namespace MatchManager.Core.Services.Account
 {
@@ -29,17 +30,15 @@ namespace MatchManager.Core.Services.Account
         private readonly ITokenService _tokenService;
         private readonly ISecureService _secureService;
         private readonly IDataProtectionProvider _iDataProtectionProvider;
-        private readonly IEmailService _emailService;
         private readonly IOptions<AppConfig> _appConfig;
 
-        public AccountServiceAsync(IAccountRepositoryAsync accountRepository, IMapper mapper, ITokenService tokenService, ISecureService secureService, IDataProtectionProvider iDataProtectionProvider, IEmailService emailService, IConfiguration configuration, IOptions<AppConfig> appConfig)
+        public AccountServiceAsync(IAccountRepositoryAsync accountRepository, IMapper mapper, ITokenService tokenService, ISecureService secureService, IDataProtectionProvider iDataProtectionProvider, IConfiguration configuration, IOptions<AppConfig> appConfig)
         {
             _accountRepository = accountRepository;
             _mapper = mapper;
             _tokenService = tokenService;
             _secureService = secureService;
             _iDataProtectionProvider = iDataProtectionProvider;
-            _emailService = emailService;
             _appConfig = appConfig;
             _result = new CoreResult();
         }
@@ -160,14 +159,18 @@ namespace MatchManager.Core.Services.Account
                     _accountRepository.SaveUserActivation(activations);
                     await _accountRepository.SaveChangesToDBAsync();
 
-                    var body = _emailService.CreateRegistrationVerificationEmail(appUser, _appConfig.Value.Urls.DomainUrl + _appConfig.Value.Urls.RegistrationVerificationUrl, _appConfig.Value.EmailConfiguration.Email);
-                    MessageTemplate messageTemplate = new MessageTemplate()
+                    var body = emailService.CreateRegistrationVerificationEmail(appUser, _appConfig.Value.Urls.DomainUrl + _appConfig.Value.Urls.RegistrationVerificationUrl, _appConfig.Value.EmailConfiguration.Email);
+
+                    CommunicateClient emailClient = new CommunicateClient(new EmailService() 
                     {
-                        ToAddress = appUser.Email,
                         Subject = "Welcome to MeetApp",
-                        Body = body,
-                        Bcc = new List<string>(),
-                        Cc = new List<string>(),
+                        Message = ,
+                        Receiver = new EmailReceiver()
+                        {
+                            Bcc = new List<string>(),
+                            Cc = new List<string>(),
+                            ToAddress = appUser.Email
+                        },
                         EmailProperties = new EmailProperties()
                         {
                             Email = _appConfig.Value.EmailConfiguration.Email.Trim(),
@@ -176,9 +179,8 @@ namespace MatchManager.Core.Services.Account
                             Port = _appConfig.Value.EmailConfiguration.MailPort,
                             DisplayName = _appConfig.Value.AppName.Trim()
                         }
-                    };
-
-                    await _emailService.SendEmail(messageTemplate);
+                    });
+                    await emailClient.SendAsync(messageTemplate);
 
                     _result.IsSuccess = true;
                     _result.Result = "Your account has been created, in order to proceed, please check your email and click the link inside to confirm your account.";
