@@ -7,7 +7,7 @@
 RegisterHelper.prototype = {
     _registerEventListener: function () {
         if (this.form.attachEvent) {
-            form.attachEvent("submit", registerHelper._processForm);
+            this.form.attachEvent("submit", registerHelper._processForm);
         } else {
             this.form.addEventListener("submit", registerHelper._processForm);
         }

@@ -19,8 +19,8 @@ namespace MatchManager.Web.Controllers
         }
 
         [HttpGet]
-        [Route("account-verification/completed")]
-        public ActionResult Completed()
+        [Route("account/request-verification")]
+        public ActionResult RequestVerification()
         {
             return View();
         }
