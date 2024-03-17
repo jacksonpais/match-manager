@@ -1,0 +1,118 @@
+﻿<section>
+    <div class="bg-red-500 text-white p-3 shadow-md flex items-center justify-between">
+        <div class="flex items-center">
+            <img src="" class="mr-3 h-6 sm:h-9" alt="Logo" />
+            <h1 class="text-xl font-semibold">App</h1>
+        </div>
+    </div>
+    <div class="w-full flex items-center justify-center mt-4">
+        <div class="p-2">
+            <div class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+                <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+                    <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+                        <h1 class="text-xl font-semibold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+                            Sign in to your account
+                        </h1>
+                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative hidden" role="alert" id="errorMessage">
+                            <strong class="font-semibold">Oh Uh!</strong>
+                            <span class="block sm:inline">Something seriously bad happened.</span>
+                        </div>
+                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative hidden" role="alert" id="successMessage">
+                            <strong class="font-semibold">Almost done!</strong>
+                            <span class="block sm:inline">Something seriously bad happened.</span>
+                        </div>
+                        <form class="space-y-4 md:space-y-6" id="register_form">
+                            <div className="grid md:grid-cols-2 md:gap-6">
+                                <div class="relative z-0 w-full mb-5 group">
+                                    <input type="text"
+                                           name="user_first_name"
+                                           id="user_first_name"
+                                           class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-red-500 focus:outline-none focus:ring-0 focus:border-red-600 peer"
+                                           placeholder=" "
+                                           autocomplete="off" />
+                                    <label htmlFor="user_first_name"
+                                           class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-red-600 peer-focus:dark:text-red-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                                        First Name
+                                    </label>
+                                    <p id="err_user_first_name" class="text-xs text-red-600 hidden"></p>
+                                </div>
+                                <div class="relative z-0 w-full mb-5 group">
+                                    <input type="text"
+                                           name="user_last_name"
+                                           id="user_last_name"
+                                           class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-red-500 focus:outline-none focus:ring-0 focus:border-red-600 peer"
+                                           placeholder=" "
+                                           autocomplete="off" />
+                                    <label htmlFor="user_last_name"
+                                           class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-red-600 peer-focus:dark:text-red-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                                        Last Name
+                                    </label>
+                                    <p id="err_user_last_name" class="text-xs text-red-600 hidden"></p>
+                                </div>
+                            </div>
+                            <div class="relative z-0 w-full mb-5 group">
+                                <input type="text"
+                                       name="user_email"
+                                       id="user_email"
+                                       class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-red-500 focus:outline-none focus:ring-0 focus:border-red-600 peer"
+                                       placeholder=" "
+                                       autocomplete="off" />
+                                <label htmlFor="user_email"
+                                       class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-red-600 peer-focus:dark:text-red-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                                    Email address
+                                </label>
+                                <p id="err_user_email" class="text-xs text-red-600 hidden"></p>
+                            </div>
+                            <div class="relative z-0 w-full mb-5 group">
+                                <input type="password"
+                                       name="user_password"
+                                       id="user_password"
+                                       class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-red-500 focus:outline-none focus:ring-0 focus:border-red-600 peer"
+                                       placeholder=" "
+                                       autocomplete="off" />
+                                <label htmlFor="user_password"
+                                       class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-red-600 peer-focus:dark:text-red-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                                    Password
+                                </label>
+                                <p id="err_user_password" class="text-xs text-red-600 hidden"></p>
+                            </div>
+                            <div class="relative z-0 w-full mb-5 group">
+                                <input type="password"
+                                       name="user_confirm_password"
+                                       id="user_confirm_password"
+                                       class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-red-500 focus:outline-none focus:ring-0 focus:border-red-600 peer"
+                                       placeholder=" "
+                                       autocomplete="off" />
+                                <label htmlFor="user_confirm_password"
+                                       class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-red-600 peer-focus:dark:text-red-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                                    Confirm Password
+                                </label>
+                                <p id="err_user_confirm_password" class="text-xs text-red-600 hidden"></p>
+                            </div>
+                            <button type="submit"
+                                    class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                                Submit
+                            </button>
+                        </form>
+                        <div class="text-center">
+                            <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+                                By creating this account, you agree to our <a class="font-medium text-red-600 hover:underline dark:text-primary-500" href="#">Privacy Policy</a>
+                            </p>
+                            <div class="inline-flex items-center justify-center w-full">
+                                <hr class="w-64 h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
+                                <span class="absolute px-3 font-medium text-red-900 -translate-x-1/2 bg-white left-1/2 dark:text-white dark:bg-gray-900">I HAVE AN ACCOUNT</span>
+                            </div>
+                            <p><a class="m-2 font-medium text-red-600 hover:underline dark:text-primary-500" href="/login">Sign In</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script src="~/js/scripts/register/index.js" type="text/javascript"></script>
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        registerHelper._registerEventListener();
+    });
+</script>
