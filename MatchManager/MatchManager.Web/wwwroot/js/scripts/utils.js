@@ -11,6 +11,17 @@ Utils.prototype = {
         }
         return rtn;
     },
+    IsUndefinedOrNullOrEmpty: function (value) {
+        let rtn = true;
+        if (value !== undefined) {
+            if (value !== null) {
+                if (value.trim().length !== 0) {
+                    rtn = false;
+                }
+            }
+        }
+        return rtn;
+    },
     IsEmailValid: function(email) {
         return String(email)
             .toLowerCase()

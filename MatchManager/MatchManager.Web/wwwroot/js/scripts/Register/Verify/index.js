@@ -8,6 +8,9 @@
 
 RegisterVerificationHelper.prototype = {
     _registerEventListener: function () {
+        if (session.IsTokenValid()) {
+            window.location = "/";
+        }
         this.errorMessage.classList.add("hidden");
         this.successMessage.classList.add("hidden");
         this.btnVerify.addEventListener("click", registerVerificationHelper._verifyAccount)

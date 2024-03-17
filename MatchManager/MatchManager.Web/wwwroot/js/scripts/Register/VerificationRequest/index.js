@@ -6,6 +6,9 @@
 
 VerificationRequestHelper.prototype = {
     _registerEventListener: function () {
+        if (session.IsTokenValid()) {
+            window.location = "/";
+        }
         if (this.form.attachEvent) {
             this.form.attachEvent("submit", verificationRequestHelper._processForm);
         } else {

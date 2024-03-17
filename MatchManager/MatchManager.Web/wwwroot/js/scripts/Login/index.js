@@ -6,6 +6,9 @@
 
 LoginHelper.prototype = {
     _registerEventListener: function () {
+        if (session.IsTokenValid()) {
+            window.location = "/";
+        }
         if (this.form.attachEvent) {
             form.attachEvent("submit", loginHelper._processForm);
         } else {
@@ -73,6 +76,7 @@ LoginHelper.prototype = {
         const result = await response;
         let data = await result.json();
         if (data.isSuccess) {
+            sessionStorage.setItem("token", data.result.accessToken);
             window.location = "/";
         } else {
             document.getElementById("errorMessage").classList.remove("hidden");
