@@ -4,11 +4,11 @@
 Session.prototype = {
     SetToken: function (value) {
         if (!utils.IsUndefinedOrNullOrEmpty(value)) {
-            sessionStorage.setItem("token", value);
+            localStorage.setItem("token", value);
         }
     },
     GetToken: function () {
-        return sessionStorage.getItem("token");
+        return localStorage.getItem("token");
     },
     IsTokenValid: function () {
         return !utils.IsUndefinedOrNullOrEmpty(session.GetToken());

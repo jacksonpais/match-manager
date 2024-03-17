@@ -36,7 +36,7 @@
                         Clients
                     </a>
                 </li>
-                <li>
+@*                 <li>
                     <a onclick="showTab('partners')" id="partnersLink"
                        class="flex items-center justify-center border-b-4 border-transparent hover:text-white hover:border-white py-4">
                         <svg class="h-5 w-5 me-2" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2"
@@ -46,16 +46,27 @@
                         </svg>
                         Partners
                     </a>
-                </li>
+                </li> *@
             </ul>
         </div>
         <div class="p-2">
             <div id="clientsPanel" class="">
-                <ul>
+                <div class="mt-[30vh]">
+                    <div class="border border-red-400 text-red-700 px-4 py-3 rounded relative text-center" role="alert">
+                        <span class="block sm:inline">No Clients found</span>
+                    </div>
+                    <div class="relative text-center mt-2">
+                        <button id="addClients"
+                                class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5">
+                            Add Clients
+                        </button>
+                    </div>
+                </div>
+             @*    <ul>
                     <li class="border border-sky-500 shadow-xl group relative overflow-hidden rounded-lg flex items-center justify-center w-full h-96 mb-2">
                         <div class="relative">
-                            <img src="/images/boy.jpg"
-                                 class="object-cover w-80 h-80 rounded-lg group-hover:w-[22rem] group-hover:h-[22rem] delay-300 -bottom-24 transition-all duration-500"></img>
+                            < src="/images/boy.jpg"
+                                 class="object-cover w-80 h-80 rounded-lg group-hover:w-[22rem] group-hover:h-[22rem] delay-300 -bottom-24 transition-all duration-500"/>
                             <div class="absolute top-0 right-0 mt-4 -mr-6 w-20 opacity-0 group-hover:opacity-90 transform transition-all delay-800 duration-500">
                                 <button class="bg-gray-900 hover:bg-gray-800 text-white rounded-full p-2 border border-gray-800">
                                     <svg class="h-6 w-6" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2"
@@ -110,7 +121,7 @@
                             </div>
                         </div>
                     </li>
-                </ul>
+                </ul> *@
             </div>
             <div id="partnersPanel" class="hidden">
                 <div>
